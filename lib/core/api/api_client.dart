@@ -30,8 +30,11 @@ class ApiClient {
     }
   }
 
-  Future<Response> post(String endpoint, {dynamic data , Options? options}) async {
+  Future<Response> post(String endpoint, {dynamic data , Options? options , String? baseUrl}) async {
     try {
+      if(baseUrl != null) {
+        _dio.options.baseUrl = baseUrl;
+      }
       return await _dio.post(endpoint, data: data,options: options);
     } catch (e) {
       throw _handleError(e, endpoint);
@@ -75,7 +78,7 @@ class ApiClient {
 
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
-          return TimeoutException("Connection timeout. Please try again.");
+          return TimeoutException("Connection timeout. try again.");
         case DioExceptionType.sendTimeout:
           return TimeoutException("Request timeout. Please check your connection.");
         case DioExceptionType.receiveTimeout:

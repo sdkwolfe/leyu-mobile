@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:leyu_mobile/core/utils/message.dart';
@@ -13,8 +14,7 @@ class AuthController extends GetxController {
   final AuthUseCase _authUseCase;
   final BaseDataUsecase _baseDataUseCase;
 
-  AuthController(this._authUseCase,this._baseDataUseCase);
-
+  AuthController(this._authUseCase, this._baseDataUseCase);
 
   ///Register
   RxBool isRegistering = false.obs;
@@ -32,11 +32,12 @@ class AuthController extends GetxController {
   RxString birthDate = ''.obs;
   RxnString gender = RxnString(null);
   RxString email = ''.obs;
+  RxString referralCode = ''.obs;
   RxString password = ''.obs;
+  Rxn<File> nationalIdFile = Rxn<File>(null);
   RxInt currentPage = 0.obs;
   RxBool isRegisteringProfile = false.obs;
   RxString registerProfileLoadingReason = "".obs;
-
 
   ///Language
   RxnString selectedLanguageId = RxnString(null);
@@ -67,40 +68,43 @@ class AuthController extends GetxController {
 
   Timer? _resendTimer;
 
-
   @override
   void onClose() {
     _resendTimer?.cancel();
     super.onClose();
   }
 
-  Future<void> register(String phone , {isActivating = false}) async {
+  Future<void> register(String phone, {isActivating = false}) async {
     if (!canResend.value) {
-      showErrorMessage("Please wait for ${countdown.value} seconds before requesting again");
+      showErrorMessage(
+          "Please wait for ${countdown.value} seconds before requesting again");
       return;
     }
     isRegistering.value = true;
-    if(isActivating) {
+    if (isActivating) {
       registerLoadingReason.value = "Requesting Code";
     } else {
       registerLoadingReason.value = "Registering";
     }
     String? id = await _authUseCase.register(phone);
     print(id);
-    if(id != null) {
+    if (id != null) {
       registeredPhone.value = phone;
       verificationId.value = id;
       _startCountdownTimer();
     }
     isRegistering.value = false;
   }
+
   Future<void> activateAccount(String otp) async {
     isActivatingAccount.value = true;
     registerLoadingReason.value = "Activating account";
-    final isSuccess = await _authUseCase.activateAccount(verificationId.value! , registeredPhone.value , otp);
+    final isSuccess = await _authUseCase.activateAccount(
+        verificationId.value!, registeredPhone.value, otp);
 
     isActivatingAccount.value = false;
   }
+
   Future<void> registerProfile() async {
     NewUser newUser = NewUser(
         firstName: firstName.value,
@@ -111,7 +115,9 @@ class AuthController extends GetxController {
         languageId: selectedLanguageId.value!,
         dialectId: selectedDialectId.value!,
         email: email.value,
-        password: password.value);
+        password: password.value,
+        referralCode: referralCode.value.isNotEmpty ? referralCode.value : null,
+        nationalIdPath: nationalIdFile.value?.path);
     isRegisteringProfile.value = true;
     registerProfileLoadingReason.value = "Registering Profile";
     await _authUseCase.registerProfile(newUser);
@@ -124,44 +130,49 @@ class AuthController extends GetxController {
     await _authUseCase.login(phone, password);
     isLoggingIn.value = false;
   }
-  Future<void> requestOtp(String phone , {isActivatingAccount = false}) async {
+
+  Future<void> requestOtp(String phone, {isActivatingAccount = false}) async {
     if (!canResend.value) {
-      showErrorMessage("Please wait for ${countdown.value} seconds before requesting again");
+      showErrorMessage(
+          "Please wait for ${countdown.value} seconds before requesting again");
       return;
     }
     isRequestingOtp.value = true;
-    if(isActivatingAccount){
+    if (isActivatingAccount) {
       registerLoadingReason.value = "Requesting Code";
-    }
-    else{
+    } else {
       forgotLoadingReason.value = "Requesting Code";
     }
     final isSuccess = await _authUseCase.requestOtp(phone);
-    if(isSuccess){
+    if (isSuccess) {
       _startCountdownTimer();
-      if(!isActivatingAccount) {
+      if (!isActivatingAccount) {
         forgotPhoneNumber.value = phone;
         forgotPasswordPage.value = 1;
       }
     }
     isRequestingOtp.value = false;
   }
+
   Future<void> verifyOtp(String code) async {
     isVerifyingOtp.value = true;
     forgotLoadingReason.value = "Verifying code";
-    final isSuccess = await _authUseCase.verifyOtp(forgotPhoneNumber.value , code);
-    if(isSuccess){
+    final isSuccess =
+        await _authUseCase.verifyOtp(forgotPhoneNumber.value, code);
+    if (isSuccess) {
       otp.value = code;
       forgotPasswordPage.value = 2;
     }
     isVerifyingOtp.value = false;
   }
+
   Future<void> resetPassword(String newPassword) async {
     isResettingPassword.value = true;
     forgotLoadingReason.value = "Resetting Password";
-    final isSuccess = await _authUseCase.resetPassword(forgotPhoneNumber.value , otp.value , newPassword);
+    final isSuccess = await _authUseCase.resetPassword(
+        forgotPhoneNumber.value, otp.value, newPassword);
     isResettingPassword.value = false;
-    if(isSuccess){
+    if (isSuccess) {
       Get.offAllNamed(AppRoutes.login);
     }
   }
@@ -180,30 +191,37 @@ class AuthController extends GetxController {
     });
   }
 
-  void saveFirstStage(String fName , String mName , String lName , String bDate , String genderValue) {
+  void saveFirstStage(String fName, String mName, String lName, String bDate,
+      String genderValue, File? nationalId) {
     firstName.value = fName;
     middleName.value = mName;
     lastName.value = lName;
     birthDate.value = bDate;
     gender.value = genderValue;
+    nationalIdFile.value = nationalId;
     currentPage.value = 1; // Move to the next page
   }
+
   Future<void> getLanguages() async {
     isLoadingLanguages.value = true;
     final result = await _baseDataUseCase.getLanguages();
     languages.value = Set.from(result);
     isLoadingLanguages.value = false;
   }
+
   Future<void> getDialects(String languageId) async {
     isLoadingDialects.value = true;
     final result = await _baseDataUseCase.getDialects(languageId);
     dialects.value = Set.from(result);
     isLoadingDialects.value = false;
   }
-  void saveThirdStage(String languageId, String dialectId , String email) {
+
+  void saveThirdStage(
+      String languageId, String dialectId, String email, String referralCode) {
     selectedLanguageId.value = languageId;
     selectedDialectId.value = dialectId;
     this.email.value = email;
+    this.referralCode.value = referralCode;
     currentPage.value = 3;
   }
 }

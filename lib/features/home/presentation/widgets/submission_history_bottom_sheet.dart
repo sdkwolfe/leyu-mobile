@@ -61,9 +61,9 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Text(
-                      'Submission History',
-                      style: TextStyle(
+                    Text(
+                      'history.title'.tr,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppColors.darkGray,
@@ -106,7 +106,7 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Loading submissions...',
+                        'history.loading'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -136,7 +136,7 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'No submission history',
+                        'history.empty_title'.tr,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -145,7 +145,7 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Your previous submissions will appear here',
+                        'history.empty_subtitle'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[500],
@@ -274,7 +274,8 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Content based on type
-                if (submission.type == 'text' && submission.textDataSet != null) ...[
+                if (submission.type == 'text' &&
+                    submission.textDataSet != null) ...[
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
@@ -291,7 +292,8 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                       ),
                     ),
                   ),
-                ] else if (submission.type == 'audio' && submission.filePath != null) ...[
+                ] else if (submission.type == 'audio' &&
+                    submission.filePath != null) ...[
                   AudioPlayerWidget(audioUrl: submission.filePath!),
                 ],
 
@@ -321,9 +323,9 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                               color: AppColors.red,
                             ),
                             const SizedBox(width: 8),
-                            const Text(
-                              'Rejection Reasons',
-                              style: TextStyle(
+                            Text(
+                              'history.rejection_reasons'.tr,
+                              style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.red,
@@ -338,7 +340,8 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         margin: const EdgeInsets.only(top: 6),
@@ -364,9 +367,11 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
                                   ),
                                   if (reason.comment.isNotEmpty)
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 14, top: 4),
+                                      padding: const EdgeInsets.only(
+                                          left: 14, top: 4),
                                       child: Text(
-                                        'Comment: ${reason.comment}',
+                                        'history.comment'.trParams(
+                                            {'comment': reason.comment}),
                                         style: TextStyle(
                                           fontSize: 11,
                                           color: Colors.grey[700],
@@ -432,7 +437,7 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            status,
+            _getStatusLabel(status),
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -442,6 +447,19 @@ class SubmissionHistoryBottomSheet extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'history.status_approved'.tr;
+      case 'rejected':
+        return 'history.status_rejected'.tr;
+      case 'pending':
+        return 'history.status_pending'.tr;
+      default:
+        return status;
+    }
   }
 
   Color _getStatusColor(String status) {

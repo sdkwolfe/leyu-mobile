@@ -6,6 +6,7 @@ class MicroTaskEntity {
   final String id;
   final String? instruction;
   final String? audioUrl;
+  final String? imageUrl;
   final String? text;
   final String? submissionAudioUrl;
   final String? submissionText;
@@ -20,6 +21,7 @@ class MicroTaskEntity {
     required this.id,
     this.instruction,
     this.audioUrl,
+    this.imageUrl,
     this.text,
     this.submissionAudioUrl,
     this.submissionText,
@@ -34,10 +36,15 @@ class MicroTaskEntity {
   static MicroTaskEntity fromModel(MicroTask model) {
     print('Parsing MicroTaskEntity from model with id: ${model.id}');
     print(parseTaskStatus(model.acceptanceStatus));
+
+    // Determine if filePath is an image based on file extension
+    final filePath = model.filePath;
+
     return MicroTaskEntity(
       id: model.id,
       instruction: model.instruction,
-      audioUrl: model.filePath,
+      audioUrl:filePath,
+      imageUrl:filePath,
       text: model.text,
       submissionAudioUrl: model.dataset?.filePath,
       submissionText: model.dataset?.textDataset,
@@ -46,7 +53,9 @@ class MicroTaskEntity {
       currentRetry: model.currentRetry ?? 0,
       allowedRetry: model.allowedRetry ?? 1,
       acceptanceStatus: parseTaskStatus(model.acceptanceStatus),
-      canRetry: model.canRetry ?? model.currentRetry != null && (model.allowedRetry ?? 1) > (model.currentRetry ?? 0),
+      canRetry: model.canRetry ??
+          model.currentRetry != null &&
+              (model.allowedRetry ?? 1) > (model.currentRetry ?? 0),
     );
   }
 }

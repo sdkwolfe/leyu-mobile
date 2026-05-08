@@ -12,6 +12,9 @@ class UserEntity {
   final bool isActive;
   final String role;
   final int? score;
+  final KycStatus? kycStatus;
+  final int? totalDatasetCount;
+  final int? approvedDatasetCount;
 
   UserEntity({
     required this.id,
@@ -25,6 +28,9 @@ class UserEntity {
     required this.isActive,
     required this.role,
     this.score,
+    this.kycStatus,
+    this.totalDatasetCount,
+    this.approvedDatasetCount,
   });
 
   static UserEntity fromModel(User user){
@@ -40,6 +46,9 @@ class UserEntity {
       isActive: user.isActive ?? false,
       role: user.role?.name ?? 'N/A',
       score: user.score,
+      kycStatus: user.kycStatus,
+      totalDatasetCount: user.totalDatasetCount,
+      approvedDatasetCount: user.approvedDatasetCount,
     );
   }
 }

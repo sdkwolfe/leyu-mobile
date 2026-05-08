@@ -70,7 +70,7 @@ class RejectionReason {
     return RejectionReason(
       id: json['id'] as String,
       reason: json['reason'] as String,
-      comment: json['comment'] as String,
+      comment: json['comment'] as String? ?? "",
       createdDate: json['created_date'] as String,
     );
   }

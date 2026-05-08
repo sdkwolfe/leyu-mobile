@@ -56,6 +56,17 @@ const Map<String, String> amET = {
   'common.optional': 'አማራጭ',
   'common.required': 'ያስፈልጋል',
   'common.text': 'የጽሑፍ መስክ',
+  'common.select_image_source': 'የምስል ምንጭ ይምረጡ',
+  'common.take_photo': 'ፎቶ ያንሱ',
+  'common.take_photo_subtitle': 'ካሜራዎን ተጠቅመው ያንሱ',
+  'common.choose_from_gallery': 'ከማከማቻ ይምረጡ',
+  'common.choose_from_gallery_subtitle': 'ከፎቶዎች ይምረጡ',
+  'common.remove_image': 'ምስል ያስወግዱ',
+  'common.remove_image_subtitle': 'የተመረጠውን ምስል ይሰርዙ',
+  'common.image_selected': 'ምስል ተመርጧል',
+  'common.tap_to_change': 'ለመቀየር ወይም ለማስወገድ መታ ያድርጉ',
+  'common.tap_to_upload': 'ምስል ለመስቀል መታ ያድርጉ',
+  'common.upload_subtitle': 'ፎቶ ያንሱ ወይም ከማከማቻ ይምረጡ',
 
   // Navigation
   'common.nav.home': 'መነሻ',
@@ -169,6 +180,10 @@ const Map<String, String> amET = {
   'auth.profile.dialect_error': 'እባክዎ መጀመሪያ ቋንቋ ይምረጡ።',
   'auth.profile.email': 'የኢሜይል አድራሻ',
   'auth.profile.email_placeholder': 'የኢሜይል አድራሻዎን ያስገቡ',
+  'auth.profile.referral_code': 'የማስተዋወቂያ ኮድ',
+  'auth.profile.referral_code_placeholder': 'የማስተዋወቂያ ኮድ ያስገቡ (አማራጭ)',
+  'auth.profile.national_id': 'መታወቂያ ካርድ',
+  'auth.profile.national_id_placeholder': 'መታወቂያ ካርድዎን ይስቀሉ (አማራጭ)',
 
   // Profile Registration - Password
   'auth.profile.password_title': 'የይለፍ ቃል ፍጠር!',
@@ -194,6 +209,36 @@ const Map<String, String> amET = {
   'home.wallet.withdraw': 'አውጣ',
   'home.wallet.history': 'ታሪክ',
   'home.wallet.currency': 'ብር',
+
+  // Withdraw
+  'withdraw.select_bank': 'ባንክ ይምረጡ',
+  'withdraw.search_bank': 'ባንክ ፈልግ...',
+  'withdraw.no_banks': 'ምንም ባንክ አልተገኘም',
+  'withdraw.mobile_money': 'ሞባይል ሞኒ',
+  'withdraw.bank_account': 'የባንክ ሂሳብ',
+  'withdraw.enter_account': 'የሂሳብ ቁጥርዎን ያስገቡ',
+  'withdraw.enter_phone': 'ስልክ ቁጥርዎን ያስገቡ',
+  'withdraw.account_hint': '@length አሃዝ የሂሳብ ቁጥር',
+  'withdraw.phone_hint': '@length አሃዝ ስልክ ቁጥር',
+  'withdraw.account_required': 'የሂሳብ ቁጥር ያስፈልጋል',
+  'withdraw.account_length_error': 'ትክክለኛ @length አሃዝ መሆን አለበት',
+  'withdraw.amount_label': 'የሚወጣ መጠን',
+  'withdraw.amount_hint': 'መጠን ያስገቡ',
+  'withdraw.available_balance': 'ያለ ሂሳብ',
+  'withdraw.amount_required': 'መጠን ያስፈልጋል',
+  'withdraw.amount_invalid': 'ትክክለኛ መጠን ያስገቡ',
+  'withdraw.amount_exceeds_balance': 'መጠን ከ ETB @balance አይበልጥም',
+  'withdraw.confirm_title': 'ማስወጣቱን ያረጋግጡ',
+  'withdraw.confirm_bank': 'ባንክ',
+  'withdraw.confirm_account': 'የሂሳብ ቁጥር',
+  'withdraw.confirm_phone': 'ስልክ ቁጥር',
+  'withdraw.confirm_amount': 'መጠን',
+  'withdraw.confirm_button': 'አረጋግጥ',
+  'withdraw.submitting': 'በሂደት ላይ',
+  'withdraw.success': 'የማስወጣት ጥያቄ በተሳካ ሁኔታ ቀርቧል',
+  'withdraw.error_loading_banks': 'ባንኮችን መጫን አልተሳካም። እንደገና ይሞክሩ።',
+  'withdraw.error_submit': 'ማስወጣቱ አልተሳካም። እንደገና ይሞክሩ።',
+  'withdraw.insufficient_balance': 'ለማስወጣት ቢያንስ 1 ብር ያስፈልጋል።',
 
   // ============ TASKS ============
   'home.tasks.title': 'የቅርብ ጊዜ ተግባራት',
@@ -248,6 +293,8 @@ const Map<String, String> amET = {
   'home.tasks.type.speech_to_text': 'ንግግር ወደ ጽሁፍ',
   'home.tasks.type.text_to_speech': 'ጽሁፍ ወደ ንግግር',
   'home.tasks.type.text_to_text': 'ጽሁፍ ወደ ጽሁፍ',
+  'home.tasks.type.image_to_text': 'ምስል ወደ ጽሁፍ',
+  'home.tasks.type.image_to_speech': 'ምስል ወደ ንግግር',
 
   // Task Status Badges
   'home.tasks.status.no_test_required': 'ሙከራ አያስፈልግም',
@@ -290,6 +337,7 @@ const Map<String, String> amET = {
   'home.tasks.exceeded_by_seconds': 'በ@secondsሰ ተሻግሯል',
   'home.tasks.seconds_remaining': '@secondsሰ ይቀራል',
   'home.tasks.no_text_available': 'ምንም ጽሁፍ የለም',
+  'home.tasks.no_image_available': 'ምንም ምስል የለም',
 
   // Task Test
   'home.tasks.test.title': 'የተግባር ሙከራ',
@@ -312,6 +360,42 @@ const Map<String, String> amET = {
   'profile.title': 'የተጠቃሚ ገጽ',
   'profile.my_profile': 'የእኔ መገለጫ',
   'profile.loading_profile': 'ገጽን በመጫን ላይ',
+  'profile.score': 'ነጥብ',
+  'profile.total_datasets': 'ጠቅላላ ዳታሴቶች',
+  'profile.accepted_datasets': 'የተቀበሉ ዳታሴቶች',
+
+  // KYC Status
+  'profile.kyc_verification': 'የማንነት ማረጋገጫ',
+  'profile.kyc_status_pending': 'መታወቂያ ያስፈልጋል',
+  'profile.kyc_status_under_review': 'በግምገማ ላይ',
+  'profile.kyc_status_approved': 'ተረጋግጧል',
+  'profile.kyc_status_rejected': 'ውድቅ ሆኗል',
+  'profile.kyc_desc_pending':
+      'መታወቂያ ካርድዎን ገና አልሰቀሉም። ማንነትዎን ለማረጋገጥ ግልጽ ፎቶ ይስቀሉ።',
+  'profile.kyc_desc_under_review':
+      'የእርስዎ መታወቂያ ካርድ በአሁኑ ጊዜ በግምገማ ላይ ነው። ማረጋገጫው እንደተጠናቀቀ እናሳውቅዎታለን።',
+  'profile.kyc_desc_approved':
+      'ማንነትዎ በተሳካ ሁኔታ ተረጋግጧል። ለሁሉም ባህሪያት ሙሉ መዳረሻ አለዎት።',
+  'profile.kyc_desc_rejected':
+      'የእርስዎ መታወቂያ ካርድ ማረጋገጫ ውድቅ ሆኗል። ለመቀጠል የመታወቂያ ካርድዎን ግልጽ ፎቶ ይስቀሉ።',
+  'profile.kyc_upload': 'መታወቂያ ካርድ ይስቀሉ',
+  'profile.kyc_reupload': 'መታወቂያ ካርድ እንደገና ይስቀሉ',
+  'profile.kyc_reupload_title': 'መታወቂያ ካርድ ይስቀሉ',
+  'profile.kyc_reupload_subtitle': 'እባክዎ ለማረጋገጫ የመታወቂያ ካርድዎን ግልጽ ፎቶ ይስቀሉ።',
+  'profile.kyc_upload_button': 'ይስቀሉ',
+  'profile.kyc_upload_success': 'መታወቂያ ካርድ በተሳካ ሁኔታ ተስቅሏል',
+  'profile.kyc_upload_failed': 'መታወቂያ ካርድ መስቀል አልተሳካም',
+
+  // Referral
+  'profile.referral_banner_title': 'የማስተዋወቂያ ኮድ አለዎት?',
+  'profile.referral_banner_subtitle': 'ለመጀመር የማስተዋወቂያ ኮድዎን ያስገቡ',
+  'profile.referral_title': 'የማስተዋወቂያ ኮድ ተግብር',
+  'profile.referral_subtitle': 'ጥቅሞችን ለማግኘት የተቀበሉትን የማስተዋወቂያ ኮድ ያስገቡ።',
+  'profile.referral_placeholder': 'የማስተዋወቂያ ኮድ ያስገቡ',
+  'profile.referral_apply': 'ተግብር',
+  'profile.referral_required': 'እባክዎ የማስተዋወቂያ ኮድ ያስገቡ',
+  'profile.referral_success': 'የማስተዋወቂያ ኮድ በተሳካ ሁኔታ ተተግብሯል',
+  'profile.referral_error': 'ልክ ያልሆነ ወይም አስቀድሞ ጥቅም ላይ የዋለ ኮድ',
 
   // Profile Options
   'profile.edit': 'መረጃን አስተካክል',
@@ -537,4 +621,49 @@ const Map<String, String> amET = {
   'onboarding.stt.text_input_desc': 'የሰሙትን እዚህ ይጻፉ።',
   'onboarding.stt.submit_button_title': 'አስገባ/ቀጥል',
   'onboarding.stt.submit_button_desc': 'ጽሑፍዎን ለማስገባ እና ወደ ቀጣይ ተግባር ለመሄድ ይጫኑ።',
+
+  // ============ INTRODUCTION ============
+  'intro.next': 'ቀጣይ',
+  'intro.get_started': 'ይጀምሩ',
+  'intro.page1.title': 'ተግባር ይምረጡ',
+  'intro.page1.subtitle':
+      'ለፍላጎቶችዎ እና ክህሎቶችዎ የተዘጋጁ ሰፊ ተግባራትን ያስሱ፣ እና በመተግበሪያው ጉዞዎን ለመጀመር አንዱን ይምረጡ።',
+  'intro.page2.title': 'ቀረጻ ይጀምሩ',
+  'intro.page2.subtitle':
+      'ተግባሮቻዎን በብቃት እና በትክክል ለማጠናቀቅ ጽሑፍ፣ ድምጽ ወይም ሌሎች ምላሾችን በመቅዳት እድገትዎን ማስቀረጽ ይጀምሩ።',
+  'intro.page3.title': 'ለቀጣዩ ተግባር ያሸብልሉ',
+  'intro.page3.subtitle':
+      'ዝርዝርዎ ቀላልና ያልተቋረጠ ሆኖ እንዲቆይ ዝግጁ ሲሆኑ በማሸብለል ወደ ቀጣዩ ተግባር በቀላሉ ይሂዱ።',
+
+  // Submission History
+  'history.title': 'የማስገቢያ ታሪክ',
+  'history.loading': 'ማስገቢያዎችን በመጫን ላይ...',
+  'history.empty_title': 'የማስገቢያ ታሪክ የለም',
+  'history.empty_subtitle': 'ቀደምት ማስገቢያዎችዎ እዚህ ይታያሉ',
+  'history.rejection_reasons': 'የውድቅ ምክንያቶች',
+  'history.comment': 'አስተያየት: @comment',
+  'history.status_approved': 'ተቀባይነት አግኝቷል',
+  'history.status_rejected': 'ውድቅ ሆኗል',
+  'history.status_pending': 'በመጠባበቅ ላይ',
+  'chatbot.title': 'እገዛ እና ድጋፍ',
+  'chatbot.online': 'በመስመር ላይ',
+  'chatbot.welcome_message':
+      'ሰላም! እርስዎን ለመርዳት እዚህ ነኝ። ስለ መተግበሪያው ማንኛውንም ነገር ይጠይቁኝ።',
+  'chatbot.input_hint': 'ጥያቄዎን እዚህ ይጻፉ...',
+  'chatbot.thinking': 'በማሰብ ላይ...',
+  'chatbot.error_message': 'ይቅርታ፣ ስህተት አጋጥሞኛል',
+  'chatbot.error_general': 'ይቅርታ፣ ጥያቄዎን ማስኬድ አልቻልኩም። እባክዎ እንደገና ይሞክሩ።',
+  'chatbot.error_network':
+      'መገናኘት አልተቻለም። እባክዎ የበይነመረብ ግንኙነትዎን ያረጋግጡ እና እንደገና ይሞክሩ።',
+  'chatbot.error_timeout': 'ጥያቄው ረጅም ጊዜ ወስዷል። እባክዎ እንደገና ይሞክሩ።',
+  'chatbot.error_unavailable': 'አገልግሎቱ ለጊዜው አይገኝም። እባክዎ ቆየት ብለው እንደገና ይሞክሩ።',
+  'chatbot.sources': 'ምንጮች',
+  'chatbot.confidence': 'እምነት',
+  'chatbot.match': 'ተመሳሳይነት',
+  'chatbot.confident': 'እምነት',
+  'chatbot.suggestions_title': 'ፈጣን ጥያቄዎች',
+  'chatbot.suggestion_1': 'እንዴት ልጀምር?',
+  'chatbot.suggestion_2': 'ተግባራት እንዴት ይሰራሉ?',
+  'chatbot.suggestion_3': 'መገለጫዬን እንዴት ማዘመን እችላለሁ?',
+  'chatbot.suggestion_4': 'ገንዘብ እንዴት ማግኘት እችላለሁ?',
 };

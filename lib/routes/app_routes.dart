@@ -18,4 +18,6 @@ abstract class AppRoutes {
   static const changePassword = '/changePassword';
 
   static const notification = '/notification';
+  static const chatbot = '/chatbot';
+  static const selectBank = '/selectBank';
 }

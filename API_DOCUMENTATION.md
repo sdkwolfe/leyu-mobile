@@ -56,10 +56,12 @@ The app uses JWT (JSON Web Tokens) for authentication:
 
 ```dart
 // Login
-POST /auth/login
+POST /iam/auth/mobile_login
 Body: {
-  "phone": "+251912345678",
-  "password": "password123"
+  "username": "+251912345678",
+  "password": "password123",
+  "device_token": "string",
+  "device_type": "android"
 }
 
 Response: {
@@ -69,14 +71,16 @@ Response: {
 }
 
 // Refresh Token
-POST /auth/refresh-access-token
+POST /iam/auth/refresh-token
 Body: {
-  "refreshToken": "eyJhbGc..."
+  "refresh_token": "eyJhbGc..."
 }
 
 Response: {
-  "accessToken": "eyJhbGc...",
-  "refreshToken": "eyJhbGc..."
+  "data": {
+    "access_token": "eyJhbGc...",
+    "new_refresh_token": "eyJhbGc..."
+  }
 }
 ```
 
@@ -86,35 +90,61 @@ Response: {
 
 #### Register
 ```
-POST /auth/register
+POST /iam/users/sign-up
 Body: {
-  "phone": "+251912345678"
+  "phone_number": "+251912345678"
 }
 Response: {
-  "verificationId": "uuid"
+  "data": {
+    "verification_id": "uuid"
+  }
 }
 ```
 
 #### Activate Account
 ```
-POST /auth/activate
+POST /iam/users/verify/:verificationId
 Body: {
-  "verificationId": "uuid",
   "phone": "+251912345678",
-  "otp": "123456"
+  "code": "123456"
 }
 Response: {
-  "accessToken": "...",
-  "user": { ... }
+  "data": {
+    "accessToken": "...",
+    "user": { ... }
+  }
+}
+```
+
+#### Register Profile
+```
+PATCH /iam/users
+Body: FormData {
+  "first_name": "John",
+  "middle_name": "Doe",
+  "last_name": "Smith",
+  "email": "john@example.com",
+  "password": "password123",
+  "birth_date": "1990-01-01",
+  "gender": "Male",
+  "dialect_id": "uuid",
+  "language_id": "uuid",
+  "referral_code": "ABC123",   // optional
+  "national_id": File          // optional
+}
+Response: {
+  "success": true
 }
 ```
 
 #### Login
 ```
-POST /auth/login
+POST /iam/auth/mobile_login
 Body: {
-  "phone": "+251912345678",
-  "password": "password123"
+  "username": "+251912345678",
+  "password": "password123",
+  "device_token": "string",
+  "device_type": "android"
 }
 Response: {
   "accessToken": "...",
@@ -125,9 +155,21 @@ Response: {
 
 #### Request OTP (Password Reset)
 ```
-POST /auth/request-otp
+POST /iam/auth/forgot-password
 Body: {
-  "phone": "+251912345678"
+  "username": "+251912345678"
+}
+Response: {
+  "success": true
+}
+```
+
+#### Verify OTP
+```
+POST /iam/auth/verify-otp
+Body: {
+  "username": "+251912345678",
+  "code": "123456"
 }
 Response: {
   "success": true
@@ -136,11 +178,11 @@ Response: {
 
 #### Reset Password
 ```
-POST /auth/reset-password
+POST /iam/auth/reset-password
 Body: {
-  "phone": "+251912345678",
-  "otp": "123456",
-  "newPassword": "newpassword123"
+  "username": "+251912345678",
+  "code": "123456",
+  "password": "newpassword123"
 }
 Response: {
   "success": true
@@ -149,70 +191,175 @@ Response: {
 
 ### Task Endpoints
 
-#### Get Tasks
+#### Get My Tasks
 ```
-GET /tasks
+GET /task-distribution/my-tasks
 Query Params:
-  - status: "available" | "in_progress" | "completed"
-  - type: "speech_to_text" | "text_to_speech" | "text_to_text"
   - page: number
   - limit: number
+  - status: "AVAILABLE" | "IN_PROGRESS" | "COMPLETED" (optional, omit for all)
 
 Response: {
-  "tasks": [
-    {
-      "id": "uuid",
-      "title": "Task Title",
-      "description": "Task Description",
-      "type": "speech_to_text",
-      "status": "available",
-      "reward": 10.50,
-      "deadline": "2026-02-01T00:00:00Z"
-    }
-  ],
-  "total": 100,
-  "page": 1,
-  "limit": 20
+  "data": {
+    "result": [
+      {
+        "id": "uuid",
+        "name": "Task Name",
+        "description": "Task Description",
+        "task_type": "text-audio" | "audio-text" | "text-text" | "image-text" | "image-audio",
+        "status": "AVAILABLE",
+        "require_contributor_test": false,
+        "dead_line": "2026-02-01T00:00:00Z",
+        "average_time": 30,
+        "done_count": 5,
+        "total_count": 100,
+        "rejected_count": 1,
+        "approved_count": 4,
+        "pending_count": 0,
+        "estimated_earning": 10.50,
+        "earning_per_task": 0.50,
+        "taskRequirement": {
+          "min_seconds": 3,
+          "max_seconds": 30
+        }
+      }
+    ]
+  }
 }
 ```
 
+**Task Types**:
+| API Value | App Enum |
+|---|---|
+| `text-audio` | `Text_to_Speech` |
+| `audio-text` | `Speech_to_Text` |
+| `text-text` | `Text_to_Text` |
+| `image-text` | `Image_to_Text` |
+| `image-audio` | `Image_to_Speech` |
+
 #### Get Task Detail
 ```
-GET /tasks/:id
+GET /task-distribution/assigned-tasks/:taskId
 Response: {
-  "id": "uuid",
-  "title": "Task Title",
-  "description": "Task Description",
-  "instructions": "Detailed instructions...",
-  "type": "speech_to_text",
-  "dataset": {
+  "data": {
     "id": "uuid",
-    "name": "Dataset Name"
-  },
-  "microTasks": [
+    "name": "Task Name",
+    "task_type": "text-audio",
+    "is_test": false,
+    "has_passed": "APPROVED" | "PENDING" | "UNDER_REVIEW" | "REJECTED",
+    "batch": 1,
+    "minimum_seconds": 3,
+    "maximum_seconds": 30,
+    "minimum_characters_length": 10,
+    "maximum_characters_length": 500,
+    "contributorMicroTask": [
+      {
+        "id": "uuid",
+        "instruction": "Read this text",
+        "file_path": "https://...",
+        "text": "Sample text",
+        "type": "audio",
+        "current_retry": 0,
+        "allowed_retry": 3,
+        "acceptance_status": "PENDING",
+        "can_retry": true,
+        "dataSet": { ... }
+      }
+    ],
+    "taskInstruction": {
+      "title": "Instruction Title",
+      "content": "Detailed instructions...",
+      "image_instruction_url": "https://...",
+      "video_instruction_url": "https://...",
+      "audio_instruction_url": "https://..."
+    }
+  }
+}
+```
+
+#### Submit Audio Task
+```
+POST /task-distribution/:taskId/contribute_audio
+Body: FormData {
+  "batch": 1,
+  "is_test": false,
+  "<microTaskId>": File  // one entry per recorded micro-task
+}
+Headers: {
+  "Content-Type": "multipart/form-data"
+}
+Response: {
+  "success": true
+}
+```
+
+#### Submit Text Task
+```
+POST /task-distribution/:taskId/contribute
+Body: {
+  "batch": 1,
+  "is_test": false,
+  "attempts": [
     {
-      "id": "uuid",
-      "content": "Sample text to read",
-      "status": "not_started"
+      "micro_task_id": "uuid",
+      "text_data_set": "transcribed text"
+    }
+  ]
+}
+Response: {
+  "success": true
+}
+```
+
+#### Get Submission History
+```
+GET /task-distribution/contributor-micro-task-submissions/:microTaskId
+Response: {
+  "data": [ ... ]
+}
+```
+
+### Wallet Endpoints
+
+#### Get Balance
+```
+GET /wallet/balance
+Response: {
+  "data": 125.50
+}
+```
+
+#### Get Withdraw Options (Banks)
+```
+GET /wallet/get-withdraw-options
+Response: {
+  "data": [
+    {
+      "id": 1,
+      "slug": "cbe",
+      "swift": "CBETETAA",
+      "name": "Commercial Bank of Ethiopia",
+      "acct_length": 13,
+      "is_mobilemoney": false,
+      "is_active": true
     }
   ]
 }
 ```
 
-#### Submit Task
+#### Withdraw Money
 ```
-POST /tasks/:id/submit
-Body: FormData {
-  "microTaskId": "uuid",
-  "audioFile": File (for audio tasks),
-  "textContent": "transcribed text" (for text tasks)
+POST /wallet/withdraw-money
+Headers: {
+  "x-idempotency-key": "<timestamp>-<random>"
+}
+Body: {
+  "account_number": "1234567890123",
+  "amount": 100.00,
+  "bank_code": "cbe"
 }
 Response: {
-  "success": true,
-  "submission": {
-    "id": "uuid",
-    "status": "under_review"
-  }
+  "success": true
 }
 ```
 
@@ -220,54 +367,90 @@ Response: {
 
 #### Get Profile
 ```
-GET /profile
+GET /iam/users/me
 Response: {
-  "id": "uuid",
-  "firstName": "John",
-  "middleName": "Doe",
-  "lastName": "Smith",
-  "email": "john@example.com",
-  "phone": "+251912345678",
-  "profilePicture": "https://...",
-  "gender": "Male",
-  "birthDate": "1990-01-01",
-  "language": { ... },
-  "dialect": { ... }
+  "data": {
+    "id": "uuid",
+    "first_name": "John",
+    "middle_name": "Doe",
+    "last_name": "Smith",
+    "email": "john@example.com",
+    "phone": "+251912345678",
+    "profile_picture": "https://...",
+    "gender": "Male",
+    "birth_date": "1990-01-01",
+    "language": { ... },
+    "dialect": { ... }
+  }
 }
 ```
 
 #### Update Profile
 ```
-PUT /profile
+PUT /iam/users/me
 Body: {
-  "firstName": "John",
-  "middleName": "Doe",
-  "lastName": "Smith",
+  "first_name": "John",
+  "middle_name": "Doe",
+  "last_name": "Smith",
   "email": "john@example.com"
 }
 Response: {
-  "success": true,
-  "user": { ... }
+  "success": true
 }
 ```
 
 #### Upload Profile Picture
 ```
-POST /profile/picture
+PUT /iam/users/profile
 Body: FormData {
-  "file": File
+  "image": File
 }
 Response: {
-  "profilePicture": "https://..."
+  "data": {
+    "profile_picture": "https://..."
+  }
+}
+```
+
+#### Upload National ID
+```
+PATCH /iam/users/national_id
+Body: FormData {
+  "image": File
+}
+Response: {
+  "success": true
+}
+```
+
+#### Apply Referral Code
+```
+PATCH /iam/users/referral_code
+Body: {
+  "referral_code": "ABC123"
+}
+Response: {
+  "success": true
+}
+```
+
+#### Update Preferred Language
+```
+PATCH /iam/users/preferred-language
+Body: {
+  "language_key": "am"
+}
+Response: {
+  "success": true
 }
 ```
 
 #### Change Password
 ```
-POST /profile/change-password
+PUT /iam/users/change-password
 Body: {
-  "currentPassword": "oldpassword",
-  "newPassword": "newpassword"
+  "current_password": "oldpassword",
+  "new_password": "newpassword"
 }
 Response: {
   "success": true
@@ -301,7 +484,7 @@ Response: {
 
 #### Mark as Read
 ```
-PUT /notifications/:id/read
+PATCH /notifications/:id/read
 Response: {
   "success": true
 }
@@ -309,7 +492,7 @@ Response: {
 
 #### Mark All as Read
 ```
-PUT /notifications/read-all
+PATCH /notifications/read-all
 Response: {
   "success": true
 }
@@ -319,9 +502,38 @@ Response: {
 ```
 GET /notifications/count-new
 Response: {
-  "count": 10
+  "data": 10
 }
 ```
+
+### AI Chatbot Endpoints
+
+#### Ask Question
+```
+POST /v1/ask
+Body: {
+  "question": "How do I complete a task?",
+  "max_sources": 3,
+  "min_similarity": 0.1
+}
+Response: {
+  "answer": "To complete a task...",
+  "sources": [
+    {
+      "content": "Source content...",
+      "similarity": 0.85,
+      "metadata": { ... }
+    }
+  ],
+  "confidence_score": 0.92,
+  "processing_time": 1.23
+}
+```
+
+**Error codes**:
+- `400` — Invalid request / bad question format
+- `503` — Service unavailable
+- `504` — Request timeout
 
 ### Base Data Endpoints
 
@@ -486,23 +698,32 @@ onError: (error, handler) async {
 
 ## File Upload
 
-### Multipart Form Data
+### Audio Task Submission
 
 ```dart
-// Upload audio file
+// Build a FormData map keyed by microTaskId
+final Map<String, MultipartFile> recordings = {
+  microTaskId: MultipartFile.fromFileSync(filePath),
+};
+final formData = FormData.fromMap(recordings);
+formData.fields.add(MapEntry('batch', batch.toString()));
+formData.fields.add(MapEntry('is_test', isTest.toString()));
+
+await apiClient.post(
+  '/task-distribution/$taskId/contribute_audio',
+  data: formData,
+  options: Options(headers: {'Content-Type': 'multipart/form-data'}),
+);
+```
+
+### Profile Picture Upload
+
+```dart
 final formData = FormData.fromMap({
-  'microTaskId': taskId,
-  'audioFile': await MultipartFile.fromFile(
-    filePath,
-    filename: 'recording.m4a',
-    contentType: MediaType('audio', 'm4a'),
-  ),
+  'image': await MultipartFile.fromFile(imagePath),
 });
 
-final response = await apiClient.post(
-  '/tasks/$taskId/submit',
-  data: formData,
-);
+await apiClient.put('/iam/users/profile', data: formData);
 ```
 
 ## Pagination
@@ -510,23 +731,33 @@ final response = await apiClient.post(
 ### Request
 
 ```dart
-GET /tasks?page=1&limit=20
+GET /task-distribution/my-tasks?page=1&limit=10
 ```
 
 ### Response
 
 ```json
 {
-  "data": [ ... ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 100,
-    "totalPages": 5,
-    "hasNext": true,
-    "hasPrev": false
+  "data": {
+    "result": [ ... ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 100,
+      "totalPages": 10,
+      "hasNext": true,
+      "hasPrev": false
+    }
   }
 }
+```
+
+## Idempotency
+
+Withdrawal requests require an idempotency key to prevent duplicate submissions:
+
+```
+x-idempotency-key: <timestamp>-<random_6_digit_number>
 ```
 
 ## Rate Limiting
@@ -570,19 +801,19 @@ await cacheManager.put(url, response);
 
 ```dart
 // Mock successful response
-when(mockApiClient.get('/tasks'))
+when(mockApiClient.get('/task-distribution/my-tasks'))
     .thenAnswer((_) async => Response(
-      data: {'tasks': []},
+      data: {'data': {'result': []}},
       statusCode: 200,
     ));
 
 // Mock error response
-when(mockApiClient.get('/tasks'))
+when(mockApiClient.get('/task-distribution/my-tasks'))
     .thenThrow(DioException(
-      requestOptions: RequestOptions(path: '/tasks'),
+      requestOptions: RequestOptions(path: '/task-distribution/my-tasks'),
       response: Response(
         statusCode: 401,
-        requestOptions: RequestOptions(path: '/tasks'),
+        requestOptions: RequestOptions(path: '/task-distribution/my-tasks'),
       ),
     ));
 ```
@@ -598,6 +829,7 @@ when(mockApiClient.get('/tasks'))
 5. **Error Messages**: Don't expose sensitive information
 6. **Rate Limiting**: Respect API rate limits
 7. **Timeout**: Set appropriate timeouts
+8. **Idempotency**: Use idempotency keys for financial operations
 
 ### Token Security
 
@@ -640,6 +872,10 @@ logger.d('Token received');
 - Verify required fields
 - Validate data types
 
+#### Chatbot 503/504
+- 503 means the AI service is temporarily down
+- 504 means the question took too long to process — retry
+
 ## Additional Resources
 
 - [API Constants](lib/core/api/api_constants.dart)
@@ -657,4 +893,4 @@ For API-related issues:
 
 ---
 
-**Last Updated**: January 27, 2026
+**Last Updated**: May 8, 2026

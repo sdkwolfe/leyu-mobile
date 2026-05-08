@@ -45,6 +45,7 @@ dependencies:
   tutorial_coach_mark: ^1.2.11
   onesignal_flutter: ^5.2.5
   flutter_dotenv: ^5.1.0
+  ethiopian_date_picker: ^0.0.7
   flutter:
     sdk: flutter
 

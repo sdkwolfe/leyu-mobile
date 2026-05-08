@@ -56,6 +56,17 @@ const Map<String, String> omET = {
   'common.optional': 'Filannoo',
   'common.required': 'Barbaachisaadha',
   'common.text': 'Dirree Barreeffamaa',
+  'common.select_image_source': 'Maddii Suuraa Filadhu',
+  'common.take_photo': 'Suuraa Kaasi',
+  'common.take_photo_subtitle': 'Kaameraa kee fayyadamiitii kaasi',
+  'common.choose_from_gallery': 'Kuusaa keessaa Filadhu',
+  'common.choose_from_gallery_subtitle': 'Suuraalee kee keessaa filadhu',
+  'common.remove_image': 'Suuraa Haqi',
+  'common.remove_image_subtitle': 'Suuraa filatame haqi',
+  'common.image_selected': 'Suuraan Filatameera',
+  'common.tap_to_change': 'Jijjiiruuf ykn haquuf tuqi',
+  'common.tap_to_upload': 'Suuraa olkaa\'uuf tuqi',
+  'common.upload_subtitle': 'Suuraa kaasi ykn kuusaa keessaa filadhu',
 
   // Navigation
   'common.nav.home': 'Fuula duraa',
@@ -91,7 +102,7 @@ const Map<String, String> omET = {
   'auth.register.login': 'Seeni',
 
   // OTP/Activation Screen
-  'auth.otp.title': 'Koodii Mirkaneessaa',
+  'auth.otp.title': 'Akkaawuntii Banu',
   'auth.otp.subtitle': 'Koodiin mirkaneessaa ergameera gara',
   'auth.otp.button': 'Herrega kakaasi',
   'auth.otp.loading': 'Herrega kakaasaa jira',
@@ -175,27 +186,33 @@ const Map<String, String> omET = {
       'Afaan kee, gosa afaanii fi teessoo imeelii kee filadhu',
   'auth.profile.language_spoken': 'Afaan Dubbatamu',
   'auth.profile.language_placeholder': 'Afaan kee filadhu',
-  'auth.profile.dialect': 'Garee Gosa Afaanii',
+  'auth.profile.dialect': 'Garee Loqoda Afaanii',
   'auth.profile.dialect_placeholder': 'Gosa afaanii kee filadhu',
   'auth.profile.dialect_error': 'Maaloo jalqaba afaan filadhu.',
   'auth.profile.email': 'Teessoo Imeelii',
   'auth.profile.email_placeholder': 'Teessoo imeelii kee galchi',
+  'auth.profile.referral_code': 'Koodii Beeksisaa',
+  'auth.profile.referral_code_placeholder':
+      'Koodii beeksisaa galchi (Dirqama kan hin taane)',
+  'auth.profile.national_id': 'Ragaa Eenyummaa',
+  'auth.profile.national_id_placeholder':
+      'Ragaa eenyummaa kee olkaa\'i (Dirqama kan hin taane)',
 
   // Profile Registration - Password
-  'auth.profile.password_title': 'Jecha Icciitii Uumi!',
+  'auth.profile.password_title': 'Jecha icciitti addaa fi cimaa Uumi',
   'auth.profile.password_subtitle': 'Jecha icciitii addaa fi cimaa filadhu',
   'auth.profile.password': 'Jecha Icciitii',
   'auth.profile.password_placeholder': 'Jecha icciitii kee galchi',
   'auth.profile.confirm_password': 'Jecha Icciitii Mirkaneessi',
   'auth.profile.confirm_password_placeholder': 'Jecha icciitii kee mirkaneessi',
-  'auth.profile.create_button': 'Herrega Uumi',
+  'auth.profile.create_button': 'Akkaawuntii Umii',
   'auth.profile.create_loading': 'Herrega uumaa jira',
 
   // ============ HOME ============
   'home.title': 'Mana',
   'home.welcome': 'Baga Nagaan Dhuftan',
-  'home.greeting': 'Akkam jirtu @name,',
-  'home.welcome_message': 'Gara Liyutti baga nagaan dhufte',
+  'home.greeting': 'Akkam Jirta @name,',
+  'home.welcome_message': 'Gara Leyu baga nagaan dhufte',
   'home.greeting_morning': 'Akkam bultan',
   'home.greeting_afternoon': 'Akkam guyyaa',
   'home.greeting_evening': 'Akkam galgala',
@@ -204,7 +221,39 @@ const Map<String, String> omET = {
   'home.wallet.balance': 'Hafnaan Walletii/boorsaa kee',
   'home.wallet.withdraw': 'Maallaqa baasi',
   'home.wallet.history': 'Seenaa',
-  'home.wallet.currency': 'Qarshii',
+  'home.wallet.currency': 'ETB',
+
+  // Withdraw
+  'withdraw.select_bank': 'Baankii filadhu',
+  'withdraw.search_bank': 'Baankii barbaadi...',
+  'withdraw.no_banks': 'Baankiin hin argamne',
+  'withdraw.mobile_money': 'Maallaqaa Mobaayilii',
+  'withdraw.bank_account': 'Herrega Baankii',
+  'withdraw.enter_account': 'Lakkoofsa herrega kee galchi',
+  'withdraw.enter_phone': 'Lakkoofsa bilbilaa kee galchi',
+  'withdraw.account_hint': 'Lakkoofsa herrega lakkoofsa @length',
+  'withdraw.phone_hint': 'Lakkoofsa bilbilaa lakkoofsa @length',
+  'withdraw.account_required': 'Lakkoofsi herregaa barbaachisaadha',
+  'withdraw.account_length_error': 'Lakkoofsa @length qofa ta\'uu qaba',
+  'withdraw.amount_label': 'Hamma Baasuu',
+  'withdraw.amount_hint': 'Hamma galchi',
+  'withdraw.available_balance': 'Hamma Jiru',
+  'withdraw.amount_required': 'Hamma barbaachisaadha',
+  'withdraw.amount_invalid': 'Hamma sirrii galchi',
+  'withdraw.amount_exceeds_balance': 'Hamma ETB @balance caalu hin danda\'u',
+  'withdraw.confirm_title': 'Baasuu Mirkaneessi',
+  'withdraw.confirm_bank': 'Baankii',
+  'withdraw.confirm_account': 'Lakkoofsa Herregaa',
+  'withdraw.confirm_phone': 'Lakkoofsa Bilbilaa',
+  'withdraw.confirm_amount': 'Hamma',
+  'withdraw.confirm_button': 'Mirkaneessi',
+  'withdraw.submitting': 'Hojjetamaa jira',
+  'withdraw.success': 'Gaaffiin baasuu milkaa\'inaan dhiyaateera',
+  'withdraw.error_loading_banks':
+      'Baankiiwwan fe\'uu hin danda\'amne. Irra deebi\'ii yaali.',
+  'withdraw.error_submit': 'Baasuu hin milkoofne. Irra deebi\'ii yaali.',
+  'withdraw.insufficient_balance':
+      'Baasuu kan danda\'amu xiqqaatti ETB 1 barbaachisa.',
 
   // ============ TASKS ============
   'home.tasks.title': 'Hojiiwwan',
@@ -259,6 +308,8 @@ const Map<String, String> omET = {
   'home.tasks.type.speech_to_text': 'Dubbii/haasaa gara Barreeffamaatti',
   'home.tasks.type.text_to_speech': 'Barreeffama gara Dubbiitti/haasaa',
   'home.tasks.type.text_to_text': 'Barreeffama gara Barreeffamaatti',
+  'home.tasks.type.image_to_text': 'Suuraa gara Barreeffamaatti',
+  'home.tasks.type.image_to_speech': 'Suuraa gara Dubbiitti/haasaa',
 
   // Task Status Badges
   'home.tasks.status.no_test_required': 'Qorannaan hin barbaachisu',
@@ -307,6 +358,7 @@ const Map<String, String> omET = {
   'home.tasks.exceeded_by_seconds': '@secondss dabarfameera',
   'home.tasks.seconds_remaining': '@secondss hafe',
   'home.tasks.no_text_available': 'Barreeffamni hin jiru',
+  'home.tasks.no_image_available': 'Suuraan hin jiru',
 
   // Task Test
   'home.tasks.test.title': 'Qormaata Hojii',
@@ -330,6 +382,44 @@ const Map<String, String> omET = {
   'profile.title': 'Piroofaayilii',
   'profile.my_profile': 'Piroofaayilii Koo',
   'profile.loading_profile': 'Fuula/Profaayilii fe\'amaa jira',
+  'profile.score': 'Qabxii',
+  'profile.total_datasets': 'Deetaaseetii Waliigalaa',
+  'profile.accepted_datasets': 'Deetaaseetii Fudhataman',
+
+  // KYC Status
+  'profile.kyc_verification': 'Mirkaneessa Eenyummaa',
+  'profile.kyc_status_pending': 'Ragaa Eenyummaa Barbaachisa',
+  'profile.kyc_status_under_review': 'Gamaaggama Jalatti',
+  'profile.kyc_status_approved': 'Mirkaneeffameera',
+  'profile.kyc_status_rejected': 'Didameera',
+  'profile.kyc_desc_pending':
+      'Ragaa eenyummaa kee ammaaf hin olkaa\'in. Eenyummaa kee mirkaneessuuf suuraa ifa ta\'e olkaa\'i.',
+  'profile.kyc_desc_under_review':
+      'Ragaan eenyummaa kee yeroo ammaa gamaaggama jalatti jira. Mirkaneessuun erga xumuramuun beeksifna.',
+  'profile.kyc_desc_approved':
+      'Eenyummaan kee milkaa\'inaan mirkaneeffameera. Amaloota hundaaf dhaqqaba guutuu qabda.',
+  'profile.kyc_desc_rejected':
+      'Mirkaneessi ragaa eenyummaa kee didameera. Itti fufuuf suuraa ragaa eenyummaa kee ifa ta\'e olkaa\'i.',
+  'profile.kyc_upload': 'Ragaa Eenyummaa Olkaa\'i',
+  'profile.kyc_reupload': 'Ragaa Eenyummaa Irra Deebi\'ii Olkaa\'i',
+  'profile.kyc_reupload_title': 'Ragaa Eenyummaa Olkaa\'i',
+  'profile.kyc_reupload_subtitle':
+      'Maaloo mirkaneeffannaaf suuraa ragaa eenyummaa kee ifa ta\'e olkaa\'i.',
+  'profile.kyc_upload_button': 'Olkaa\'i',
+  'profile.kyc_upload_success': 'Ragaan eenyummaa milkaa\'inaan olkaa\'ameera',
+  'profile.kyc_upload_failed': 'Ragaa eenyummaa olkaa\'uun hin milkoofne',
+
+  // Referral
+  'profile.referral_banner_title': 'Koodii wabii qabdaa?',
+  'profile.referral_banner_subtitle': 'Jalqabuuf koodii wabii kee galchi',
+  'profile.referral_title': 'Koodii Wabii Fayyadami',
+  'profile.referral_subtitle':
+      'Faayidaalee argachuuf koodii wabii argatte galchi.',
+  'profile.referral_placeholder': 'Koodii wabii galchi',
+  'profile.referral_apply': 'Fayyadami',
+  'profile.referral_required': 'Maaloo koodii wabii galchi',
+  'profile.referral_success': 'Koodiin wabii milkaa\'inaan fayyadamameera',
+  'profile.referral_error': 'Koodii sirrii miti ykn duraan fayyadamameera',
 
   // Profile Options
   'profile.edit': 'Piroofaayilii Sirreessi',
@@ -580,4 +670,54 @@ const Map<String, String> omET = {
   'onboarding.stt.submit_button_title': 'Galchi/Itti Fufi',
   'onboarding.stt.submit_button_desc':
       'Barreeffama kee galchuu fi gara hojii itti aanuutti ce\'uuf cuqaasi.',
+
+  // ============ INTRODUCTION ============
+  'intro.next': 'Itti Fufi',
+  'intro.get_started': 'Jalqabi',
+  'intro.page1.title': 'Hojii filadhu',
+  'intro.page1.subtitle':
+      'Hojiiwwan fedhii fi dandeettii kee irratti hundaa\'an bal\'aa ta\'an barbaadi, fi tokkoo filadhuu adeemsa kee appii keessatti jalqabuuf.',
+  'intro.page2.title': 'Waraabbii jalqabi',
+  'intro.page2.subtitle':
+      'Hojiiwwan kee si\'oomina fi sirriitti xumuruf barreeffama, sagalee, ykn deebii biroo waraabuu jalqabuun adeemsa kee qabadhu.',
+  'intro.page3.title': 'Hojii itti aanuuf gadi-fuudhi',
+  'intro.page3.subtitle':
+      'Adeemsi hojii keetii haala lallaafaan akka itti fufuuf, yeroo qophaawu gadi-fuuchuun gara hojii itti aanutti salphatti darbi.',
+
+  // Submission History
+  'history.title': 'Seenaa Galchaa',
+  'history.loading': 'Galchaalee fe\'aa jira...',
+  'history.empty_title': 'Seenaa galchaa hin jiru',
+  'history.empty_subtitle': 'Galchaalee kee duraan galchite asitti ni mul\'atu',
+  'history.rejection_reasons': 'Sababoota Diduu',
+  'history.comment': 'Yaada: @comment',
+  'history.status_approved': 'Fudhatameera',
+  'history.status_rejected': 'Didameera',
+  'history.status_pending': 'Eegaa jira',
+
+  // ============ CHATBOT ============
+  'chatbot.title': 'Gargaarsa & Deeggarsa',
+  'chatbot.online': 'Sarara irratti',
+  'chatbot.welcome_message':
+      'Akkam! Si gargaaruuf as jira. Waa\'ee appii kanaa waan barbaadde na gaafadhu.',
+  'chatbot.input_hint': 'Gaaffii kee as barreessi...',
+  'chatbot.thinking': 'Yaadaa jira...',
+  'chatbot.error_message': 'Dhiifama, dogoggora argan',
+  'chatbot.error_general':
+      'Dhiifama, gaaffii kee adeemsisuu hin dandeenye. Maaloo irra deebi\'ii yaali.',
+  'chatbot.error_network':
+      'Walqunnamtii uumuu hin dandeenye. Maaloo walqunnamtii interneetii kee mirkaneessii irra deebi\'ii yaali.',
+  'chatbot.error_timeout':
+      'Gaaffiin yeroo dheeraa fudhate. Maaloo irra deebi\'ii yaali.',
+  'chatbot.error_unavailable':
+      'Tajaajilli yeroodhaaf hin argamu. Maaloo booda irra deebi\'ii yaali.',
+  'chatbot.sources': 'Maddoota',
+  'chatbot.confidence': 'Amanamummaa',
+  'chatbot.match': 'walsimsiisa',
+  'chatbot.confident': 'amanamummaa',
+  'chatbot.suggestions_title': 'Gaaffilee saffisaa',
+  'chatbot.suggestion_1': 'Akkamittin jalqaba?',
+  'chatbot.suggestion_2': 'Hojiiwwan akkamitti hojjetu?',
+  'chatbot.suggestion_3': 'Profaayilii koo akkamittin haaromsu?',
+  'chatbot.suggestion_4': 'Maallaqa akkamittin argadha?',
 };

@@ -69,6 +69,10 @@ class _TextToTextWidgetState extends State<TextToTextWidget> {
       if (_isNavigating) return;
 
       final newIndex = _pageController.page?.round() ?? 0;
+      // Only respond to settled pages (not mid-animation fractional values)
+      final isSettled = (_pageController.page! - newIndex).abs() < 0.01;
+      if (!isSettled) return;
+
       if (_controller.selectedMicroTaskIndex.value != newIndex) {
         _saveCurrentTextIfEligible();
         _updateToNewMicroTask(newIndex);
@@ -287,21 +291,28 @@ class _TextToTextWidgetState extends State<TextToTextWidget> {
     final screenHeight = MediaQuery.of(context).size.height;
     final isSmallScreen = ScreenConstants.isSmallScreen(screenHeight);
 
-    if (!isSmallScreen && _pageController.hasClients) {
-      // Animate PageController for normal screens
-      _pageController.animateToPage(
-        targetIndex,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
+    // Set flag BEFORE animating so the listener ignores this transition
+    _isNavigating = true;
 
-    // Update index
+    // Update index and text first
     _controller.selectedMicroTaskIndex.value = targetIndex;
     final newMicroTaskId = task.microTasks[targetIndex].id;
     setState(() {
       _textController.text = _controller.savedTextOutputs[newMicroTaskId] ?? '';
     });
+
+    if (!isSmallScreen && _pageController.hasClients) {
+      // Animate PageController for normal screens
+      _pageController
+          .animateToPage(
+            targetIndex,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+          )
+          .then((_) => _isNavigating = false);
+    } else {
+      _isNavigating = false;
+    }
 
     // Re-enable focus after page transition
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -569,14 +580,8 @@ class _TextToTextWidgetState extends State<TextToTextWidget> {
             _controller.savedTextOutputs[newMicroTaskId] ?? '';
       });
     } else {
-      // Normal screen: Use PageController animation
+      // Normal screen: Set flag BEFORE animating so the listener ignores this
       _isNavigating = true;
-
-      await _pageController.animateToPage(
-        nextIndex,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
 
       _controller.selectedMicroTaskIndex.value = nextIndex;
       final newMicroTaskId = task.microTasks[nextIndex].id;
@@ -584,6 +589,12 @@ class _TextToTextWidgetState extends State<TextToTextWidget> {
         _textController.text =
             _controller.savedTextOutputs[newMicroTaskId] ?? '';
       });
+
+      await _pageController.animateToPage(
+        nextIndex,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
 
       _isNavigating = false;
     }

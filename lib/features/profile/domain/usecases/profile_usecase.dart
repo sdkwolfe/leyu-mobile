@@ -35,18 +35,55 @@ class ProfileUseCase {
     final result = await _profileRepository.uploadProfilePicture(imagePath);
     return result.fold(
       (failure) {
-        showErrorMessage("Failed to upload profile picture: ${failure.message}");
+        showErrorMessage(
+            "Failed to upload profile picture: ${failure.message}");
         return null;
       },
       (imageUrl) => imageUrl,
     );
   }
 
-  Future<bool> changePassword(String currentPassword, String newPassword) async {
-    final result = await _profileRepository.changePassword(currentPassword, newPassword);
+  Future<bool> changePassword(
+      String currentPassword, String newPassword) async {
+    final result =
+        await _profileRepository.changePassword(currentPassword, newPassword);
     return result.fold(
       (failure) {
         showErrorMessage("Failed to change password: ${failure.message}");
+        return false;
+      },
+      (success) => success,
+    );
+  }
+
+  Future<bool> uploadNationalId(String imagePath) async {
+    final result = await _profileRepository.uploadNationalId(imagePath);
+    return result.fold(
+      (failure) {
+        showErrorMessage("Failed to upload national ID: ${failure.message}");
+        return false;
+      },
+      (success) => success,
+    );
+  }
+
+  Future<bool> applyReferralCode(String referralCode) async {
+    final result = await _profileRepository.applyReferralCode(referralCode);
+    return result.fold(
+      (failure) {
+        showErrorMessage("Failed to apply referral code: ${failure.message}");
+        return false;
+      },
+      (success) => success,
+    );
+  }
+
+  Future<bool> updatePreferredLanguage(String languageCode) async {
+    final result =
+        await _profileRepository.updatePreferredLanguage(languageCode);
+    return result.fold(
+      (failure) {
+        // Silently fail — language change is best-effort
         return false;
       },
       (success) => success,

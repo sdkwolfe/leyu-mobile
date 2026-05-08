@@ -1,12 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:leyu_mobile/core/utils/message.dart';
+import 'package:leyu_mobile/core/widgets/language_changer.dart';
 
 import '../../../../core/utils/screen_size.dart';
 import '../../../../core/widgets/button.dart';
 import '../../../../core/widgets/date_picker.dart';
 import '../../../../core/widgets/dropdown.dart';
 import '../../../../core/widgets/input_box.dart';
+import '../../../../core/widgets/image_picker_widget.dart';
 import '../controllers/auth_controller.dart';
 
 class RegisterUserInfoWidget extends StatefulWidget {
@@ -28,6 +30,7 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
   RxnString selectedGender = RxnString(null);
+  Rxn<File> selectedNationalId = Rxn<File>(null);
 
   final FocusNode _firstNameFocusNode = FocusNode();
   final FocusNode _middleNameFocusNode = FocusNode();
@@ -37,11 +40,16 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
   @override
   void initState() {
     super.initState();
-    _firstNameController.value = TextEditingValue(text: _authController.firstName.value ?? '');
-    _middleNameController.value = TextEditingValue(text: _authController.middleName.value ?? '');
-    _lastNameController.value = TextEditingValue(text: _authController.lastName.value ?? '');
-    _birthDateController.value = TextEditingValue(text: _authController.birthDate.value ?? '');
+    _firstNameController.value =
+        TextEditingValue(text: _authController.firstName.value);
+    _middleNameController.value =
+        TextEditingValue(text: _authController.middleName.value);
+    _lastNameController.value =
+        TextEditingValue(text: _authController.lastName.value);
+    _birthDateController.value =
+        TextEditingValue(text: _authController.birthDate.value);
     selectedGender.value = _authController.gender.value;
+    selectedNationalId.value = _authController.nationalIdFile.value;
   }
 
   @override
@@ -54,7 +62,9 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: getScreenHeight(context)*0.025,),
+                SizedBox(
+                  height: getScreenHeight(context) * 0.025,
+                ),
                 Row(
                   children: [
                     InkWell(
@@ -64,13 +74,20 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                       child: const Icon(Icons.arrow_back, size: 26),
                     ),
                     const Spacer(),
-                    const Spacer(),
+                    LanguageChanger()
                   ],
                 ),
                 SizedBox(height: getScreenHeight(context) * 0.025),
-                Text("auth.profile.user_info_title".tr,style: const TextStyle(fontSize: 28,fontWeight: FontWeight.w900),),
+                Text(
+                  "auth.profile.user_info_title".tr,
+                  style: const TextStyle(
+                      fontSize: 28, fontWeight: FontWeight.w900),
+                ),
                 const SizedBox(height: 5),
-                Text("auth.profile.user_info_subtitle".tr,style: const TextStyle(fontSize: 13,color: Colors.black54),),
+                Text(
+                  "auth.profile.user_info_subtitle".tr,
+                  style: const TextStyle(fontSize: 13, color: Colors.black54),
+                ),
                 SizedBox(height: getScreenHeight(context) * 0.02),
                 Form(
                   key: formKey,
@@ -85,7 +102,7 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                         focusNext: _middleNameFocusNode,
                         showLabel: true,
                       ),
-                      SizedBox(height: getScreenHeight(context)*0.01),
+                      SizedBox(height: getScreenHeight(context) * 0.01),
                       InputBoxWidget(
                         inputType: InputType.text,
                         label: "auth.profile.middle_name".tr,
@@ -95,7 +112,7 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                         focusNext: _lastNameFocusNode,
                         showLabel: true,
                       ),
-                      SizedBox(height: getScreenHeight(context)*0.01),
+                      SizedBox(height: getScreenHeight(context) * 0.01),
                       InputBoxWidget(
                         inputType: InputType.text,
                         label: "auth.profile.last_name".tr,
@@ -105,7 +122,7 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                         focusNext: _birthDateFocusNode,
                         showLabel: true,
                       ),
-                      SizedBox(height: getScreenHeight(context)*0.01),
+                      SizedBox(height: getScreenHeight(context) * 0.01),
                       DatePickerWidget(
                         label: "auth.profile.birth_date".tr,
                         placeHolder: "auth.profile.birth_date_placeholder".tr,
@@ -116,7 +133,7 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                         firstDate: DateTime(1900),
                         lastDate: DateTime.now(),
                       ),
-                      SizedBox(height: getScreenHeight(context)*0.01),
+                      SizedBox(height: getScreenHeight(context) * 0.01),
                       DropdownBoxWidget<String>(
                         label: "auth.profile.gender".tr,
                         items: genderOptions,
@@ -125,7 +142,9 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                         isOptional: false,
                         placeHolder: "auth.profile.gender_placeholder".tr,
                         displayText: (String text) {
-                          return text == 'Male' ? "auth.profile.gender_male".tr : "auth.profile.gender_female".tr;
+                          return text == 'Male'
+                              ? "auth.profile.gender_male".tr
+                              : "auth.profile.gender_female".tr;
                         },
                         onChanged: (String? value) {
                           if (value != null) {
@@ -135,7 +154,19 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                           }
                         },
                       ),
-                      SizedBox(height: getScreenHeight(context)*0.02),
+                      SizedBox(height: getScreenHeight(context) * 0.01),
+                      Obx(() => ImagePickerWidget(
+                            label: "auth.profile.national_id".tr,
+                            placeHolder:
+                                "auth.profile.national_id_placeholder".tr,
+                            selectedImage: selectedNationalId.value,
+                            onImageSelected: (File? file) {
+                              selectedNationalId.value = file;
+                            },
+                            showLabel: true,
+                            isOptional: true,
+                          )),
+                      SizedBox(height: getScreenHeight(context) * 0.02),
                     ],
                   ),
                 ),
@@ -149,16 +180,18 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
           fontSize: 16,
           onPressed: () {
             if (formKey.currentState!.validate()) {
-              _authController.saveFirstStage(_firstNameController.value.text.trim(),
-                  _middleNameController.value.text.trim(),
-                  _lastNameController.value.text.trim(),
-                  _birthDateController.value.text.trim(),
-                  selectedGender.value!,
+              _authController.saveFirstStage(
+                _firstNameController.value.text.trim(),
+                _middleNameController.value.text.trim(),
+                _lastNameController.value.text.trim(),
+                _birthDateController.value.text.trim(),
+                selectedGender.value!,
+                selectedNationalId.value,
               );
             }
           },
         ),
-        SizedBox(height: getScreenHeight(context)*0.025),
+        SizedBox(height: getScreenHeight(context) * 0.025),
       ],
     );
   }

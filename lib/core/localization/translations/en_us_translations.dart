@@ -56,6 +56,17 @@ const Map<String, String> enUS = {
   'common.optional': 'Optional',
   'common.required': 'Required',
   'common.text': 'Text',
+  'common.select_image_source': 'Select Image Source',
+  'common.take_photo': 'Take Photo',
+  'common.take_photo_subtitle': 'Use your camera to capture',
+  'common.choose_from_gallery': 'Choose from Gallery',
+  'common.choose_from_gallery_subtitle': 'Select from your photos',
+  'common.remove_image': 'Remove Image',
+  'common.remove_image_subtitle': 'Delete the selected image',
+  'common.image_selected': 'Image Selected',
+  'common.tap_to_change': 'Tap to change or remove',
+  'common.tap_to_upload': 'Tap to upload image',
+  'common.upload_subtitle': 'Take a photo or choose from gallery',
 
   // Navigation
   'common.nav.home': 'Home',
@@ -176,6 +187,10 @@ const Map<String, String> enUS = {
   'auth.profile.dialect_error': 'Please select a language first.',
   'auth.profile.email': 'Email Address',
   'auth.profile.email_placeholder': 'Enter your email address',
+  'auth.profile.referral_code': 'Referral Code',
+  'auth.profile.referral_code_placeholder': 'Enter referral code (optional)',
+  'auth.profile.national_id': 'National ID',
+  'auth.profile.national_id_placeholder': 'Upload your national ID (optional)',
 
   // Profile Registration - Password
   'auth.profile.password_title': 'Create Password!',
@@ -201,6 +216,37 @@ const Map<String, String> enUS = {
   'home.wallet.withdraw': 'Withdraw',
   'home.wallet.history': 'History',
   'home.wallet.currency': 'ETB',
+
+  // Withdraw
+  'withdraw.select_bank': 'Select Bank',
+  'withdraw.search_bank': 'Search bank...',
+  'withdraw.no_banks': 'No banks found',
+  'withdraw.mobile_money': 'Mobile Money',
+  'withdraw.bank_account': 'Bank Account',
+  'withdraw.enter_account': 'Enter your account number',
+  'withdraw.enter_phone': 'Enter your phone number',
+  'withdraw.account_hint': '@length digit account number',
+  'withdraw.phone_hint': '@length digit phone number',
+  'withdraw.account_required': 'Account number is required',
+  'withdraw.account_length_error': 'Must be exactly @length digits',
+  'withdraw.amount_label': 'Withdrawal Amount',
+  'withdraw.amount_hint': 'Enter amount',
+  'withdraw.available_balance': 'Available Balance',
+  'withdraw.amount_required': 'Amount is required',
+  'withdraw.amount_invalid': 'Please enter a valid amount',
+  'withdraw.amount_exceeds_balance': 'Amount cannot exceed ETB @balance',
+  'withdraw.confirm_title': 'Confirm Withdrawal',
+  'withdraw.confirm_bank': 'Bank',
+  'withdraw.confirm_account': 'Account Number',
+  'withdraw.confirm_phone': 'Phone Number',
+  'withdraw.confirm_amount': 'Amount',
+  'withdraw.confirm_button': 'Confirm',
+  'withdraw.submitting': 'Processing',
+  'withdraw.success': 'Withdrawal request submitted successfully',
+  'withdraw.error_loading_banks': 'Failed to load banks. Please try again.',
+  'withdraw.error_submit': 'Withdrawal failed. Please try again.',
+  'withdraw.insufficient_balance':
+      'Minimum balance of ETB 1 is required to withdraw.',
 
   // ============ TASKS ============
   'home.tasks.title': 'Tasks',
@@ -255,6 +301,8 @@ const Map<String, String> enUS = {
   'home.tasks.type.speech_to_text': 'Speech to Text',
   'home.tasks.type.text_to_speech': 'Text to Speech',
   'home.tasks.type.text_to_text': 'Text to Text',
+  'home.tasks.type.image_to_text': 'Image to Text',
+  'home.tasks.type.image_to_speech': 'Image to Speech',
 
   // Task Status Badges
   'home.tasks.status.no_test_required': 'No Test Required',
@@ -301,6 +349,7 @@ const Map<String, String> enUS = {
   'home.tasks.exceeded_by_seconds': 'Exceeded by @secondss',
   'home.tasks.seconds_remaining': '@secondss remaining',
   'home.tasks.no_text_available': 'No text available',
+  'home.tasks.no_image_available': 'No image available',
 
   // Task Test
   'home.tasks.test.title': 'Task Test',
@@ -324,6 +373,44 @@ const Map<String, String> enUS = {
   'profile.title': 'Profile',
   'profile.my_profile': 'My Profile',
   'profile.loading_profile': 'Loading Profile...',
+  'profile.score': 'Score',
+  'profile.total_datasets': 'Total Datasets',
+  'profile.accepted_datasets': 'Accepted Datasets',
+
+  // KYC Status
+  'profile.kyc_verification': 'KYC Verification',
+  'profile.kyc_status_pending': 'ID Required',
+  'profile.kyc_status_under_review': 'Under Review',
+  'profile.kyc_status_approved': 'Verified',
+  'profile.kyc_status_rejected': 'Rejected',
+  'profile.kyc_desc_pending':
+      'You have not uploaded your national ID yet. Please upload a clear photo to verify your identity.',
+  'profile.kyc_desc_under_review':
+      'Your national ID is currently under review. We will notify you once the verification is complete.',
+  'profile.kyc_desc_approved':
+      'Your identity has been verified successfully. You have full access to all features.',
+  'profile.kyc_desc_rejected':
+      'Your national ID verification was rejected. Please upload a clear photo of your national ID to continue.',
+  'profile.kyc_upload': 'Upload National ID',
+  'profile.kyc_reupload': 'Re-upload National ID',
+  'profile.kyc_reupload_title': 'Upload National ID',
+  'profile.kyc_reupload_subtitle':
+      'Please upload a clear photo of your national ID for verification.',
+  'profile.kyc_upload_button': 'Upload',
+  'profile.kyc_upload_success': 'National ID uploaded successfully',
+  'profile.kyc_upload_failed': 'Failed to upload national ID',
+
+  // Referral
+  'profile.referral_banner_title': 'Have a referral code?',
+  'profile.referral_banner_subtitle': 'Enter your referral code to get started',
+  'profile.referral_title': 'Apply Referral Code',
+  'profile.referral_subtitle':
+      'Enter the referral code you received to unlock benefits.',
+  'profile.referral_placeholder': 'Enter referral code',
+  'profile.referral_apply': 'Apply',
+  'profile.referral_required': 'Please enter a referral code',
+  'profile.referral_success': 'Referral code applied successfully',
+  'profile.referral_error': 'Invalid or already used referral code',
 
   // Profile Options
   'profile.edit': 'Edit Profile',
@@ -562,4 +649,51 @@ const Map<String, String> enUS = {
   'onboarding.stt.submit_button_title': 'Submit/Continue',
   'onboarding.stt.submit_button_desc':
       'Tap to submit your text and move to the next task.',
+
+  // ============ INTRODUCTION ============
+  'intro.next': 'Next',
+  'intro.get_started': 'Get Started',
+  'intro.page1.title': 'Choose a task',
+  'intro.page1.subtitle':
+      'Explore a wide range of tasks tailored to your interests and skills, and select one to kickstart your journey in the app.',
+  'intro.page2.title': 'Start Recording',
+  'intro.page2.subtitle':
+      'Begin capturing your progress by recording text, audio, or other responses to complete your tasks efficiently and accurately.',
+  'intro.page3.title': 'Scroll for the next task',
+  'intro.page3.subtitle':
+      'Easily navigate to the next task by scrolling when you\'re ready, keeping your workflow smooth and uninterrupted.',
+
+  // Submission History
+  'history.title': 'Submission History',
+  'history.loading': 'Loading submissions...',
+  'history.empty_title': 'No submission history',
+  'history.empty_subtitle': 'Your previous submissions will appear here',
+  'history.rejection_reasons': 'Rejection Reasons',
+  'history.comment': 'Comment: @comment',
+  'history.status_approved': 'Approved',
+  'history.status_rejected': 'Rejected',
+  'history.status_pending': 'Pending',
+  'chatbot.title': 'Help & Support',
+  'chatbot.online': 'Online',
+  'chatbot.welcome_message':
+      'Hello! I\'m here to help you. Ask me anything about the app.',
+  'chatbot.input_hint': 'Type your question here...',
+  'chatbot.thinking': 'Thinking...',
+  'chatbot.error_message': 'Sorry, I encountered an error',
+  'chatbot.error_general':
+      'Sorry, I couldn\'t process your request. Please try again.',
+  'chatbot.error_network':
+      'Unable to connect. Please check your internet connection and try again.',
+  'chatbot.error_timeout': 'The request took too long. Please try again.',
+  'chatbot.error_unavailable':
+      'The service is temporarily unavailable. Please try again later.',
+  'chatbot.sources': 'Sources',
+  'chatbot.confidence': 'Confidence',
+  'chatbot.match': 'match',
+  'chatbot.confident': 'confident',
+  'chatbot.suggestions_title': 'Quick questions',
+  'chatbot.suggestion_1': 'How do I get started?',
+  'chatbot.suggestion_2': 'How do tasks work?',
+  'chatbot.suggestion_3': 'How do I update my profile?',
+  'chatbot.suggestion_4': 'How do I earn money?',
 };

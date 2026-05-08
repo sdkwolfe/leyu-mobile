@@ -1,146 +1,144 @@
 # Profile Module
 
-This module provides a comprehensive profile management system for the Leyu Mobile app, following the same design patterns and form handling approaches used in the auth module.
+This module provides comprehensive profile management for the Leyu Mobile app, following the same clean architecture and form handling patterns used across the codebase.
 
 ## Components
 
 ### Pages
 
-- **ProfilePage** (`lib/features/profile/presentation/pages/profile_page.dart`)
+- **MainProfileScreen** (`presentation/pages/main_profile_screen.dart`)
+  - Primary profile screen with bottom navigation
+  - Route: `/profilePage`
 
-  - Main profile page with header and content
-  - Includes bottom navigation
+- **ProfilePage** (`presentation/pages/profile_page.dart`)
+  - Profile header and content view
 
-- **EditProfilePage** (`lib/features/profile/presentation/pages/edit_profile_page.dart`)
+- **EditProfilePage** (`presentation/pages/edit_profile_page.dart`)
+  - Editable profile form
+  - Route: `/editProfile`
 
-  - Edit profile form page
-  - Follows the same form handling patterns as auth module
-
-- **MainProfileScreen** (`lib/features/profile/presentation/pages/main_profile_screen.dart`)
-  - Complete profile screen with bottom navigation
-  - Can be used as the main profile interface
+- **ChangePasswordPage** (`presentation/pages/change_password_page.dart`)
+  - Password change form
+  - Route: `/changePassword`
 
 ### Widgets
 
-- **ProfileMainWidget** (`lib/features/profile/presentation/widgets/profile_main_widget.dart`)
-
-  - Displays profile information, statistics, and navigation options
-  - Matches the design shown in the profile UI images
-
-- **EditProfileWidget** (`lib/features/profile/presentation/widgets/edit_profile_widget.dart`)
-
-  - Form for editing profile information
-  - Uses the same input components and dropdown patterns as auth module
+- **ProfileMainWidget** — Profile info, stats, KYC status, and navigation options
+- **EditProfileWidget** — Form for editing first/middle/last name and email
+- **ChangePasswordWidget** — Current and new password form
+- **KycStatusWidget** — Displays KYC verification status with re-upload option
+- **ScoreDisplayWidget** — Shows contributor score and dataset counts
+- **BottomNavigationWidget** — Shared bottom nav bar
 
 ### Controllers
 
-- **ProfileController** (`lib/features/profile/presentation/controllers/profile_controller.dart`)
-  - Manages profile data and form state
-  - Handles language and dialect selection
-  - Follows the same reactive programming patterns as AuthController
+- **ProfileController** (`presentation/controllers/profile_controller.dart`)
+  - Loads and manages all profile state
+  - Handles profile picture upload (camera or gallery)
+  - Handles national ID upload with bottom sheet UI
+  - Handles referral code submission
+  - Manages KYC status display
+  - Handles logout (clears storage + OneSignal)
 
 ### Bindings
 
-- **ProfileBinding** (`lib/features/profile/presentation/bindings/profile_binding.dart`)
-  - Dependency injection for profile module
-  - Provides ProfileController instance
+- **ProfileBinding** (`presentation/bindings/profile_binding.dart`)
+  - Wires `ProfileRemoteDataSource`, `ProfileRepository`, `ProfileUseCase`, and `ProfileController`
 
 ## Features
 
 ### Profile Display
 
-- Profile picture with camera overlay
-- User name and status badge
-- Navigation options (Edit Profile, Language, Help, Privacy, Logout)
+- Profile picture with camera overlay (tap to change)
+- Full name, phone, and active/inactive status badge
+- Contributor score and dataset statistics (total / approved)
+- KYC status indicator with re-upload sheet for rejected/pending IDs
+- Navigation options: Edit Profile, Change Password, Referral Code, Logout
 
 ### Profile Editing
 
-- Form fields for first name, middle name, last name, email, date of birth
-- Gender dropdown selection (Male/Female)
-- Language and dialect selection dropdowns
-- Profile picture upload functionality
-- Save and cancel functionality with API integration
-- Form validation and error handling
+Editable fields (via `PUT /iam/users/me`):
+- First name, middle name, last name, email
 
-### Design System
+Read-only fields (displayed but not editable):
+- Phone number, gender, date of birth, language, dialect
 
-- Consistent with app's color scheme and typography
-- Responsive layout using proper spacing
-- Material Design principles
-- Clean, modern UI matching the provided images
+### Profile Picture Upload
+
+- Source selection bottom sheet (camera or gallery)
+- Images resized to max 512×512 at 80% quality before upload
+- Uploads via `PUT /iam/users/profile` (multipart `image` field)
+- Updates home controller's cached profile picture on success
+
+### KYC (National ID)
+
+- Displays current KYC status: `pending`, `under_review`, `approved`, `rejected`
+- Re-upload sheet available for rejected or pending states
+- Uploads via `PATCH /iam/users/national_id` (multipart `image` field)
+- Status transitions to `under_review` immediately after successful upload
+
+### Referral Code
+
+- Bottom sheet with text input (auto-uppercased)
+- Submits via `PATCH /iam/users/referral_code`
+- Option hidden once user has already been referred (`isReferred == true`)
+
+### Change Password
+
+- Requires current password and new password
+- Calls `PUT /iam/users/change-password`
+
+### Preferred Language
+
+- Updated via `PATCH /iam/users/preferred-language` with `language_key`
+- Silently fails — language change is best-effort
+
+## API Endpoints
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| `GET` | `/iam/users/me` | Fetch profile |
+| `PUT` | `/iam/users/me` | Update name/email |
+| `PUT` | `/iam/users/profile` | Upload profile picture |
+| `PUT` | `/iam/users/change-password` | Change password |
+| `PATCH` | `/iam/users/national_id` | Upload national ID |
+| `PATCH` | `/iam/users/referral_code` | Apply referral code |
+| `PATCH` | `/iam/users/preferred-language` | Update preferred language |
+
+## Reactive State
+
+Key observables in `ProfileController`:
+
+```dart
+RxBool isLoadingProfile
+RxString profileName, profileEmail, profilePhone, profileImage
+RxString profileGender, profileBirthDate, profileLanguage, profileDialect
+RxInt profileScore, totalDatasetCount, approvedDatasetCount
+Rxn<KycStatus> kycStatus
+RxBool isReferred
+RxBool isUploadingProfilePicture, isUploadingNationalId
+RxBool isEditingProfile, isChangingPassword, isApplyingReferral
+```
 
 ## Usage
 
-### Basic Profile Page
-
 ```dart
-class MyProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ProfilePage();
-  }
-}
-```
+// Navigate to profile
+Get.toNamed(AppRoutes.profilePage);
 
-### Edit Profile
-
-```dart
 // Navigate to edit profile
-Get.toNamed('/editProfile');
+Get.toNamed(AppRoutes.editProfile);
 
-// Or use the widget directly
-EditProfilePage()
-```
-
-### API Integration
-
-The profile module now integrates with the `/iam/users/me` endpoint:
-
-- **GET**: Fetches user profile data
-- **PUT**: Updates user profile information
-- **POST**: Uploads profile picture
-
-### With Bottom Navigation
-
-```dart
-// Use the complete screen with navigation
-MainProfileScreen()
+// Navigate to change password
+Get.toNamed(AppRoutes.changePassword);
 ```
 
 ## Dependencies
 
-The profile module depends on:
-
-- **Auth Module**: For User, Language, and Dialect models and entities
-- **Core Widgets**: InputBox, Dropdown, Button, DatePicker components
-- **Image Picker**: For profile picture selection
-- **GetX**: For state management and dependency injection
-- **Dio**: For HTTP requests and file uploads
-- **Dartz**: For functional error handling (Either)
-
-## Form Handling
-
-The profile module follows the same form handling patterns as the auth module:
-
-1. **Reactive Variables**: Uses `RxString`, `Rxn<T>` for reactive state
-2. **Form Controllers**: TextEditingController for input fields
-3. **Validation**: Built-in validation in dropdown and input components
-4. **Error Handling**: Consistent error display and user feedback
-5. **Loading States**: Loading indicators for async operations
-
-## Navigation
-
-The profile module includes:
-
-- Back navigation from profile pages
-- Navigation to edit profile, language selection, help, and privacy pages
-- Logout functionality with confirmation dialog
-
-## Customization
-
-The profile module is designed to be easily customizable:
-
-- Colors and themes can be modified in `AppColors`
-- Layout spacing can be adjusted in the widget files
-- Navigation options can be modified in the profile options section
-- Statistics can be customized to show different metrics
+- **Auth Module**: `User` model (shared entity for profile data)
+- **Home Module**: `HomeController` (syncs profile picture and name after edits)
+- **Core Widgets**: `InputBox`, `Button`, `ImagePickerWidget`
+- **Core Services**: `OneSignalService` (logout), `LocalStorage` (cache clear + name update)
+- **GetX**: State management and navigation
+- **Dio**: HTTP requests and multipart uploads
+- **image_picker**: Camera and gallery access

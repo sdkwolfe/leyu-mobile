@@ -8,7 +8,11 @@ abstract class ProfileRepository {
   Future<Either<Failure, bool>> updateUserProfile(
       Map<String, dynamic> profileData);
   Future<Either<Failure, String?>> uploadProfilePicture(String imagePath);
-  Future<Either<Failure, bool>> changePassword(String currentPassword, String newPassword);
+  Future<Either<Failure, bool>> changePassword(
+      String currentPassword, String newPassword);
+  Future<Either<Failure, bool>> uploadNationalId(String imagePath);
+  Future<Either<Failure, bool>> applyReferralCode(String referralCode);
+  Future<Either<Failure, bool>> updatePreferredLanguage(String languageCode);
 }
 
 class ProfileRepositoryImpl implements ProfileRepository {
@@ -49,9 +53,43 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> changePassword(String currentPassword, String newPassword) async {
+  Future<Either<Failure, bool>> changePassword(
+      String currentPassword, String newPassword) async {
     try {
-      final response = await _remoteDataSource.changePassword(currentPassword, newPassword);
+      final response =
+          await _remoteDataSource.changePassword(currentPassword, newPassword);
+      return Right(response);
+    } on Exception catch (e) {
+      return Left(mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> uploadNationalId(String imagePath) async {
+    try {
+      final response = await _remoteDataSource.uploadNationalId(imagePath);
+      return Right(response);
+    } on Exception catch (e) {
+      return Left(mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> applyReferralCode(String referralCode) async {
+    try {
+      final response = await _remoteDataSource.applyReferralCode(referralCode);
+      return Right(response);
+    } on Exception catch (e) {
+      return Left(mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> updatePreferredLanguage(
+      String languageCode) async {
+    try {
+      final response =
+          await _remoteDataSource.updatePreferredLanguage(languageCode);
       return Right(response);
     } on Exception catch (e) {
       return Left(mapExceptionToFailure(e));

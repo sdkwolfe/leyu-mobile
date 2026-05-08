@@ -16,28 +16,30 @@ class RegisterProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() => PopScope(
-      canPop: !_authController.isRegisteringProfile.value,
-      child: Scaffold(
-        backgroundColor: AppColors.appBgColor,
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          child: LoadingOverlayWidget(
-            isLoading: [_authController.isRegisteringProfile],
-            reason: _authController.registerProfileLoadingReason,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Obx((){
-                int currentPage = _authController.currentPage.value;
-                return currentPage == 0 ? RegisterUserInfoWidget():
-                currentPage == 1? RegisterTermsConditionsWidget():
-                currentPage == 2? const RegisterAdditionalInfoWidget():
-                currentPage == 3? RegisterPasswordWidget():
-                Container();
-              })
-            ),
-          )
-        ),
-      ),
-    ));
+          canPop: !_authController.isRegisteringProfile.value,
+          child: Scaffold(
+            backgroundColor: AppColors.appBgColor,
+            resizeToAvoidBottomInset: false,
+            body: SafeArea(
+                child: LoadingOverlayWidget(
+              isLoading: [_authController.isRegisteringProfile],
+              reason: _authController.registerProfileLoadingReason,
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Obx(() {
+                    int currentPage = _authController.currentPage.value;
+                    return currentPage == 0
+                        ? RegisterUserInfoWidget()
+                        : currentPage == 1
+                            ? RegisterTermsConditionsWidget()
+                            : currentPage == 2
+                                ? const RegisterAdditionalInfoWidget()
+                                : currentPage == 3
+                                    ? RegisterPasswordWidget()
+                                    : Container();
+                  })),
+            )),
+          ),
+        ));
   }
 }

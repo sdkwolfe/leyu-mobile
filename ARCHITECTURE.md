@@ -106,6 +106,28 @@ features/auth/data/
 - Manage caching strategies
 - Handle errors and exceptions
 
+## Feature Modules
+
+The app is organized into the following feature modules:
+
+### Auth (`lib/features/auth/`)
+Handles all authentication flows: registration, OTP verification, profile setup, login, and password reset.
+
+### Home (`lib/features/home/`)
+Core task management feature. Displays assigned tasks, task instructions, and handles both audio and text task submissions. Includes local file storage services for managing recordings before upload.
+
+### Profile (`lib/features/profile/`)
+User profile management: view/edit profile info, upload profile picture, upload national ID, apply referral codes, change password, and update preferred language.
+
+### Notification (`lib/features/notification/`)
+In-app notification center with pagination, mark-as-read, and unread count badge.
+
+### Chatbot (`lib/features/chatbot/`)
+AI-powered support assistant. Sends questions to a dedicated AI service and displays answers with source documents and confidence scores.
+
+### Withdraw (`lib/features/withdraw/`)
+Wallet and withdrawal management. Fetches available banks/mobile money options and submits withdrawal requests with idempotency key support.
+
 ## Core Components
 
 ### API Client
@@ -120,8 +142,10 @@ features/auth/data/
 
 **Key Files**:
 - `api_client.dart` - HTTP client configuration
-- `api_constants.dart` - API endpoints
+- `api_constants.dart` - API endpoint constants
 - `api_interceptor.dart` - Request/response interceptors
+
+**Note**: The chatbot feature uses a separate base URL configured directly in `ChatbotRemoteDataSource`.
 
 ### Cache Management
 
@@ -147,23 +171,37 @@ features/auth/data/
 - Shared functionality
 
 **Key Files**:
-- `audio_manager_service.dart` - Audio management
+- `audio_manager_service.dart` - Audio recording and playback management
 - `onesignal_service.dart` - Push notifications
 - `onboarding_service.dart` - Onboarding state
+
+### Task Storage Services
+
+**Location**: `lib/features/home/data/services/`
+
+**Responsibilities**:
+- Local file management for audio recordings
+- Task submission state persistence
+
+**Key Files**:
+- `file_storage_service.dart` - Audio file I/O
+- `task_storage_service.dart` - Task submission state
 
 ### Localization
 
 **Location**: `lib/core/localization/`
 
 **Responsibilities**:
-- Multi-language support
+- Multi-language support (English, Amharic, Afaan Oromo)
 - Translation management
 - Locale switching
 
 **Key Files**:
 - `app_translations.dart` - Translation loader
 - `localization_controller.dart` - Locale management
-- `translations/` - Language files
+- `translations/en_us_translations.dart`
+- `translations/am_et_translations.dart`
+- `translations/om_et_translations.dart`
 
 ## State Management
 
@@ -223,33 +261,44 @@ class HomePage extends GetView<HomeController> {
 **Pattern**: Named routes with GetX
 
 ```dart
-// Define routes
+// Routes
 class AppRoutes {
+  static const splashScreen = '/';
+  static const introduction = '/intro';
   static const login = '/login';
+  static const forgotPassword = '/forgotPassword';
+  static const register = '/register';
+  static const activateAccount = '/activateAccount';
+  static const registerProfile = '/registerProfile';
   static const home = '/home';
-  static const taskDetail = '/task-detail';
-}
-
-// Configure pages
-class AppPages {
-  static final routes = [
-    GetPage(
-      name: AppRoutes.login,
-      page: () => LoginPage(),
-      binding: AuthBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.home,
-      page: () => HomePage(),
-      binding: HomeBinding(),
-    ),
-  ];
+  static const taskInstructionPage = '/taskInstruction';
+  static const taskSubmissionPage = '/taskSubmission';
+  static const profilePage = '/profilePage';
+  static const editProfile = '/editProfile';
+  static const changePassword = '/changePassword';
+  static const notification = '/notification';
+  static const chatbot = '/chatbot';
+  static const selectBank = '/selectBank';
 }
 
 // Navigate
 Get.toNamed(AppRoutes.home);
 Get.offAllNamed(AppRoutes.login);
 Get.back();
+```
+
+### Task Submission Navigation
+
+The task submission page receives typed arguments:
+
+```dart
+Get.toNamed(
+  AppRoutes.taskSubmissionPage,
+  arguments: {
+    'taskName': task.name,
+    'taskType': taskType,  // TaskType enum
+  },
+);
 ```
 
 ## Dependency Injection
@@ -377,7 +426,7 @@ Future<Either<Failure, bool>> submitTask(Task task) async {
 
 // 5. Data Source
 Future<void> submitTask(TaskModel task) async {
-  await apiClient.post('/tasks/submit', data: task.toJson());
+  await apiClient.post('/task-distribution/$taskId/contribute', data: task.toJson());
 }
 ```
 
@@ -437,7 +486,7 @@ testWidgets('complete task submission flow', (tester) async {
 ### Optimization Strategies
 
 1. **Lazy Loading**: Load data on demand
-2. **Pagination**: Load data in chunks
+2. **Pagination**: Load data in chunks (default page size: 10 for tasks)
 3. **Caching**: Cache frequently accessed data
 4. **Image Optimization**: Use cached_network_image
 5. **List Optimization**: Use ListView.builder
@@ -471,6 +520,7 @@ void onClose() {
 4. **Input Validation**: Validate all user inputs
 5. **Token Refresh**: Automatic token refresh
 6. **Error Messages**: Don't expose sensitive info
+7. **Idempotency Keys**: Used for withdrawal requests to prevent duplicate transactions
 
 ## Scalability
 
@@ -480,9 +530,10 @@ void onClose() {
 2. Implement data layer (models, data sources, repositories)
 3. Implement domain layer (entities, use cases)
 4. Implement presentation layer (controllers, pages, widgets)
-5. Add routes in `lib/routes/`
-6. Create bindings for dependency injection
-7. Add tests
+5. Add routes in `lib/routes/app_routes.dart`
+6. Register pages in `lib/routes/app_pages.dart`
+7. Create bindings for dependency injection
+8. Add tests
 
 ### Module Independence
 

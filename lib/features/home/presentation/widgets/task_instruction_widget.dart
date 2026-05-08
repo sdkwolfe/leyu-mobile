@@ -25,9 +25,11 @@ class TaskInstructionBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<TaskInstructionBottomSheet> createState() => _TaskInstructionBottomSheetState();
+  State<TaskInstructionBottomSheet> createState() =>
+      _TaskInstructionBottomSheetState();
 
-  static void show(BuildContext context, TaskEntity task, TaskInstruction? taskInstruction) {
+  static void show(
+      BuildContext context, TaskEntity task, TaskInstruction? taskInstruction) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -40,7 +42,8 @@ class TaskInstructionBottomSheet extends StatefulWidget {
   }
 }
 
-class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet> {
+class _TaskInstructionBottomSheetState
+    extends State<TaskInstructionBottomSheet> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _isVideoPlaying = false;
@@ -91,7 +94,7 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
             setState(() {
               _hasVideoError = true;
               _videoErrorMessage =
-              'Unable to load video. Tap to open in browser.';
+                  'Unable to load video. Tap to open in browser.';
             });
           }
         });
@@ -212,7 +215,8 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
                       Expanded(
                         child: _buildInfoCard(
                           icon: Icons.category_outlined,
-                          label: 'home.tasks.type.speech_to_text'.tr
+                          label: 'home.tasks.type.speech_to_text'
+                              .tr
                               .split(' ')
                               .first, // "Type"
                           child: _taskTypeBadgeWidget(widget.task.type),
@@ -250,8 +254,8 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
                             child: _buildInfoCard(
                               icon: Icons.monetization_on,
                               label: 'home.tasks.estimated_earning'.tr,
-                              value: '${widget.task.estimatedEarning!
-                                  .toStringAsFixed(2)} ETB',
+                              value:
+                                  '${widget.task.estimatedEarning!.toStringAsFixed(2)} ETB',
                               valueColor: const Color(0xFF02C27D),
                             ),
                           ),
@@ -263,8 +267,8 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
                             child: _buildInfoCard(
                               icon: Icons.attach_money,
                               label: 'home.tasks.earning_per_task'.tr,
-                              value: '${widget.task.earningPerTask!
-                                  .toStringAsFixed(2)} ETB',
+                              value:
+                                  '${widget.task.earningPerTask!.toStringAsFixed(2)} ETB',
                               valueColor: const Color(0xFF02C27D),
                             ),
                           ),
@@ -336,50 +340,145 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
                         ],
                       ),
                     )
-                  else
-                    ...[
-                      // Text Instructions
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.inputBgColor,
-                          borderRadius: BorderRadius.circular(12),
+                  else ...[
+                    // Text Instructions
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.inputBgColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        instruction.content,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.darkGray,
+                          height: 1.5,
                         ),
-                        child: Text(
-                          instruction.content,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.darkGray,
-                            height: 1.5,
+                      ),
+                    ),
+
+                    // Media Instructions
+                    if (hasImage || hasVideo || hasAudio) ...[
+                      const SizedBox(height: 16),
+                      _buildSectionHeader(
+                        icon: Icons.perm_media_outlined,
+                        title: 'home.tasks.instructions'.tr,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+
+                    // Image Instruction
+                    if (hasImage) ...[
+                      _buildMediaCard(
+                        icon: Icons.image_outlined,
+                        title: 'home.tasks.image_guide'.tr,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: CachedNetworkImage(
+                            imageUrl: instruction.imageInstructionUrl!,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              height: 200,
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.primary,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              height: 200,
+                              color: Colors.grey[100],
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.broken_image_outlined,
+                                    size: 48,
+                                    color: Colors.grey[400],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Failed to load image',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                    ],
 
-                      // Media Instructions
-                      if (hasImage || hasVideo || hasAudio) ...[
-                        const SizedBox(height: 16),
-                        _buildSectionHeader(
-                          icon: Icons.perm_media_outlined,
-                          title: 'home.tasks.instructions'.tr,
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-
-                      // Image Instruction
-                      if (hasImage) ...[
-                        _buildMediaCard(
-                          icon: Icons.image_outlined,
-                          title: 'home.tasks.image_guide'.tr,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: CachedNetworkImage(
-                              imageUrl: instruction.imageInstructionUrl!,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  Container(
+                    // Video Instruction
+                    if (hasVideo) ...[
+                      _buildMediaCard(
+                        icon: Icons.play_circle_outline,
+                        title: 'home.tasks.video_guide'.tr,
+                        child: _hasVideoError
+                            ? _buildVideoError(instruction.videoInstructionUrl!)
+                            : _isVideoInitialized
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        AspectRatio(
+                                          aspectRatio: _videoController!
+                                              .value.aspectRatio,
+                                          child: VideoPlayer(_videoController!),
+                                        ),
+                                        if (!_isVideoPlaying)
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.black.withOpacity(0.3),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                Icons.play_arrow_rounded,
+                                                size: 48,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: _toggleVideoPlayback,
+                                            ),
+                                          ),
+                                        if (_isVideoPlaying)
+                                          Positioned(
+                                            bottom: 8,
+                                            right: 8,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.black
+                                                    .withOpacity(0.5),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: IconButton(
+                                                icon: const Icon(
+                                                  Icons.pause_rounded,
+                                                  color: Colors.white,
+                                                ),
+                                                onPressed: _toggleVideoPlayback,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  )
+                                : Container(
                                     height: 200,
-                                    color: Colors.grey[200],
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                     child: const Center(
                                       child: CircularProgressIndicator(
                                         color: AppColors.primary,
@@ -387,126 +486,26 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
                                       ),
                                     ),
                                   ),
-                              errorWidget: (context, url, error) =>
-                                  Container(
-                                    height: 200,
-                                    color: Colors.grey[100],
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .center,
-                                      children: [
-                                        Icon(
-                                          Icons.broken_image_outlined,
-                                          size: 48,
-                                          color: Colors.grey[400],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          'Failed to load image',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-
-                      // Video Instruction
-                      if (hasVideo) ...[
-                        _buildMediaCard(
-                          icon: Icons.play_circle_outline,
-                          title: 'home.tasks.video_guide'.tr,
-                          child: _hasVideoError
-                              ? _buildVideoError(instruction
-                              .videoInstructionUrl!)
-                              : _isVideoInitialized
-                              ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: _videoController!.value
-                                      .aspectRatio,
-                                  child: VideoPlayer(_videoController!),
-                                ),
-                                if (!_isVideoPlaying)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.3),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: IconButton(
-                                      icon: const Icon(
-                                        Icons.play_arrow_rounded,
-                                        size: 48,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: _toggleVideoPlayback,
-                                    ),
-                                  ),
-                                if (_isVideoPlaying)
-                                  Positioned(
-                                    bottom: 8,
-                                    right: 8,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.5),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.pause_rounded,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: _toggleVideoPlayback,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          )
-                              : Container(
-                            height: 200,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.primary,
-                                strokeWidth: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-
-                      // Audio Instruction
-                      if (hasAudio) ...[
-                        _buildMediaCard(
-                          icon: Icons.headphones_outlined,
-                          title: 'home.tasks.audio_guide'.tr,
-                          child: _buildAudioPlayer(instruction
-                              .audioInstructionUrl!),
-                        ),
-                      ],
+                      ),
+                      const SizedBox(height: 12),
                     ],
+
+                    // Audio Instruction
+                    if (hasAudio) ...[
+                      _buildMediaCard(
+                        icon: Icons.headphones_outlined,
+                        title: 'home.tasks.audio_guide'.tr,
+                        child:
+                            _buildAudioPlayer(instruction.audioInstructionUrl!),
+                      ),
+                    ],
+                  ],
 
                   const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
-
-
         ],
       ),
     );
@@ -553,16 +552,15 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
           const SizedBox(height: 8),
           if (child != null)
             child
-          else
-            if (value != null)
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: valueColor ?? AppColors.darkGray,
-                ),
+          else if (value != null)
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: valueColor ?? AppColors.darkGray,
               ),
+            ),
         ],
       ),
     );
@@ -674,8 +672,9 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                _isYouTubeUrl(videoUrl) ? Icons.play_circle_outline : Icons
-                    .open_in_browser,
+                _isYouTubeUrl(videoUrl)
+                    ? Icons.play_circle_outline
+                    : Icons.open_in_browser,
                 size: 48,
                 color: AppColors.primary,
               ),
@@ -693,7 +692,8 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
               ),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -851,27 +851,46 @@ class _TaskInstructionBottomSheetState extends State<TaskInstructionBottomSheet>
         return 'home.tasks.type.text_to_speech'.tr;
       case TaskType.Text_to_Text:
         return 'home.tasks.type.text_to_text'.tr;
+      case TaskType.Image_to_Text:
+        return 'home.tasks.type.image_to_text'.tr;
+      case TaskType.Image_to_Speech:
+        return 'home.tasks.type.image_to_speech'.tr;
       default:
-        return taskType
-            .toString()
-            .split('.')
-            .last
-            .replaceAll('_', ' ');
+        return taskType.toString().split('.').last.replaceAll('_', '-');
     }
   }
 
   Widget _taskTypeBadgeWidget(TaskType taskType) {
     String type = _getLocalizedTaskType(taskType);
-    Color bgColor = taskType == TaskType.Speech_to_Text
-        ? const Color(0xFFE6EFF7)
-        : taskType == TaskType.Text_to_Speech
-        ? const Color(0xFFF0FBF7)
-        : const Color(0xFFFCF5FE);
-    Color textColor = taskType == TaskType.Speech_to_Text
-        ? const Color(0xFF095FAF)
-        : taskType == TaskType.Text_to_Speech
-        ? const Color(0xFF02C27D)
-        : const Color(0xFFAD09E4);
+    Color bgColor;
+    Color textColor;
+
+    switch (taskType) {
+      case TaskType.Speech_to_Text:
+        bgColor = const Color(0xFFE6EFF7);
+        textColor = const Color(0xFF095FAF);
+        break;
+      case TaskType.Text_to_Speech:
+        bgColor = const Color(0xFFF0FBF7);
+        textColor = const Color(0xFF02C27D);
+        break;
+      case TaskType.Text_to_Text:
+        bgColor = const Color(0xFFFCF5FE);
+        textColor = const Color(0xFFAD09E4);
+        break;
+      case TaskType.Image_to_Text:
+        bgColor = const Color(0xFFFFF4E6);
+        textColor = const Color(0xFFFF8A00);
+        break;
+      case TaskType.Image_to_Speech:
+        bgColor = const Color(0xFFFFE6F0);
+        textColor = const Color(0xFFE91E63);
+        break;
+      default:
+        bgColor = const Color(0xFFE6EFF7);
+        textColor = const Color(0xFF667085);
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
       decoration: BoxDecoration(

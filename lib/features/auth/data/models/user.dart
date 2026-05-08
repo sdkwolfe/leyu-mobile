@@ -17,6 +17,10 @@ class User {
   final Language? language;
   final Dialect? dialect;
   final int? score;
+  final KycStatus? kycStatus;
+  final int? totalDatasetCount;
+  final int? approvedDatasetCount;
+  final bool? referred;
 
   User({
     this.id,
@@ -34,6 +38,10 @@ class User {
     this.language,
     this.dialect,
     this.score,
+    this.kycStatus,
+    this.totalDatasetCount,
+    this.approvedDatasetCount,
+    this.referred,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -46,13 +54,23 @@ class User {
       phoneNumber: json['phone_number'],
       profilePicture: json['profile_picture'],
       gender: json['gender'],
-      birthDate: json['birth_date'] != null ? json['birth_date'].toString().split("T")[0] : null,
+      birthDate: json['birth_date'] != null
+          ? json['birth_date'].toString().split("T")[0]
+          : null,
       isActive: json['is_active'],
       roleId: json['role_id'],
       role: json['role'] != null ? Role.fromJson(json['role']) : null,
-      language: json['language'] != null ? Language.fromJson(json['language']) : null,
-      dialect: json['dialect'] != null ? Dialect.fromJson(json['dialect']) : null,
-      score: json['score']
+      language:
+          json['language'] != null ? Language.fromJson(json['language']) : null,
+      dialect:
+          json['dialect'] != null ? Dialect.fromJson(json['dialect']) : null,
+      score: json['score'],
+      kycStatus: json['kyc_verification_status'] != null
+          ? KycStatus.fromString(json['kyc_verification_status'])
+          : null,
+      totalDatasetCount: json['totalDataSetSubmitted'],
+      approvedDatasetCount: json['totalApprovedDataSetSubmitted'],
+      referred: json['referred'] == true || json['referred'] == 1,
     );
   }
 }
@@ -71,5 +89,27 @@ class Role {
       id: json['id'],
       name: json['name'],
     );
+  }
+}
+
+enum KycStatus {
+  pending,
+  approved,
+  rejected,
+  underReview;
+
+  static fromString(String status) {
+    switch (status) {
+      case 'pending':
+        return KycStatus.pending;
+      case 'approved':
+        return KycStatus.approved;
+      case 'rejected':
+        return KycStatus.rejected;
+      case 'under_review':
+        return KycStatus.underReview;
+      default:
+        throw ArgumentError('Invalid KYC status: $status');
+    }
   }
 }

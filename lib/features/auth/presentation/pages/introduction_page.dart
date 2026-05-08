@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:leyu_mobile/core/theme/app_colors.dart';
 import 'package:leyu_mobile/core/widgets/button.dart';
+import 'package:leyu_mobile/core/widgets/language_changer.dart';
 
 import '../../../../core/utils/screen_size.dart';
 import '../controllers/introduction_controller.dart';
@@ -19,47 +20,58 @@ class IntroductionPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: GestureDetector(
-            onHorizontalDragEnd: (details) {
-              if (details.primaryVelocity != null) {
-                if (details.primaryVelocity! < 0) {
-                  // Swipe left (next page)
-                  introductionController.next(isSwiped: true);
-                } else if (details.primaryVelocity! > 0) {
-                  // Swipe right (previous page)
-                  introductionController.previous();
-                }
+        child: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity != null) {
+              if (details.primaryVelocity! < 0) {
+                // Swipe left (next page)
+                introductionController.next(isSwiped: true);
+              } else if (details.primaryVelocity! > 0) {
+                // Swipe right (previous page)
+                introductionController.previous();
               }
-            },
-            child: Obx(
-              () => SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Animated page content with consistent sizing
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 600),
-                      transitionBuilder:
-                          (Widget child, Animation<double> animation) {
+            }
+          },
+          child: Obx(
+            () => SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Align(
+                    alignment: AlignmentGeometry.centerRight,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8.0,top: 15,bottom: 20),
+                      child: LanguageChanger(),
+                    ),
+                  ),
+                  Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Animated page content with consistent sizing
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 600),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
                             );
                           },
-                      child: _buildPage(
-                        context,
-                        introductionController.pageIndex.value,
-                      ),
+                          child: _buildPage(
+                            context,
+                            introductionController.pageIndex.value,
+                          ),
+                        ),
+                        SizedBox(height: getScreenHeight(context) * 0.03),
+              
+                        // Page indicators
+                        _buildPageIndicators(context),
+              
+                        SizedBox(height: getScreenHeight(context) * 0.075),
+                      ],
                     ),
-                    SizedBox(height: getScreenHeight(context) * 0.03),
-
-                    // Page indicators
-                    _buildPageIndicators(context),
-
-                    SizedBox(height: getScreenHeight(context) * 0.075),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -73,8 +85,8 @@ class IntroductionPage extends StatelessWidget {
               introductionController.next();
             },
             text: introductionController.pageIndex.value < 2
-                ? "Next".tr
-                : "Get Started".tr,
+                ? "intro.next".tr
+                : "intro.get_started".tr,
             width: getScreenWidth(context) * 0.7,
             height: 50,
             fontSize: 18,
@@ -124,10 +136,8 @@ class IntroductionPage extends StatelessWidget {
           imageUrl: "intro-1.svg",
           imageHeight: imageHeight,
           imageWidth: imageWidth,
-          primaryTitle: "Choose a task",
-          secondaryTitle:
-              "Explore a wide range of tasks tailored to your interests and skills, and select one to kickstart your journey in the app."
-                  .tr,
+          primaryTitle: "intro.page1.title".tr,
+          secondaryTitle: "intro.page1.subtitle".tr,
         );
       case 1:
         return IntroductionCardWidget(
@@ -135,10 +145,8 @@ class IntroductionPage extends StatelessWidget {
           imageUrl: "intro-2.svg",
           imageHeight: imageHeight,
           imageWidth: imageWidth,
-          primaryTitle: "Start Recording",
-          secondaryTitle:
-              "Begin capturing your progress by recording text, audio, or other responses to complete your tasks efficiently and accurately."
-                  .tr,
+          primaryTitle: "intro.page2.title".tr,
+          secondaryTitle: "intro.page2.subtitle".tr,
         );
       case 2:
         return IntroductionCardWidget(
@@ -146,10 +154,8 @@ class IntroductionPage extends StatelessWidget {
           imageUrl: "intro-3.svg",
           imageHeight: imageHeight,
           imageWidth: imageWidth,
-          primaryTitle: "Scroll for the next task",
-          secondaryTitle:
-              "Easily navigate to the next task by scrolling when you're ready, keeping your workflow smooth and uninterrupted."
-                  .tr,
+          primaryTitle: "intro.page3.title".tr,
+          secondaryTitle: "intro.page3.subtitle".tr,
         );
       default:
         return const SizedBox.shrink();

@@ -28,7 +28,8 @@ class ProfileRemoteDataSource {
       });
 
       print('Uploading profile picture with data: $formData');
-      final response = await _apiClient.put('/iam/users/profile', data: formData);
+      final response =
+          await _apiClient.put('/iam/users/profile', data: formData);
       if (response.statusCode == 200) {
         return response.data['data']['profile_picture'];
       }
@@ -44,6 +45,37 @@ class ProfileRemoteDataSource {
     final response = await _apiClient.put('/iam/users/change-password', data: {
       'current_password': currentPassword,
       'new_password': newPassword,
+    });
+    return response.statusCode == 200;
+  }
+
+  Future<bool> uploadNationalId(String imagePath) async {
+    try {
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(imagePath),
+      });
+
+      print('Uploading national ID with data: $formData');
+      final response =
+          await _apiClient.patch('/iam/users/national_id', data: formData);
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Error uploading national ID: $e');
+      return false;
+    }
+  }
+
+  Future<bool> applyReferralCode(String referralCode) async {
+    final response = await _apiClient.patch('/iam/users/referral_code', data: {
+      'referral_code': referralCode,
+    });
+    return response.statusCode == 200;
+  }
+
+  Future<bool> updatePreferredLanguage(String languageCode) async {
+    print('Updating preferred language to: $languageCode');
+    final response = await _apiClient.patch('/iam/users/preferred-language', data: {
+      'language_key': languageCode,
     });
     return response.statusCode == 200;
   }

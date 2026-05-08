@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-Widget assetImageWidget(String imageUrl , {double scale = 1}){
-  return Image.asset("assets/images/$imageUrl",scale: scale);
+Widget assetImageWidget(String imageUrl , {double scale = 1, BoxFit fit = BoxFit.contain}){
+  return Image.asset("assets/images/$imageUrl",scale: scale,fit: fit,);
 }
 
 Widget assetSvgImageWidget(String imageUrl , {double? width, double? height,Color? color,BoxFit? fit}){

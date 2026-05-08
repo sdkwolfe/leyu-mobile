@@ -8,6 +8,8 @@ import 'package:leyu_mobile/features/home/presentation/widgets/take_test_widget.
 import 'package:leyu_mobile/features/home/presentation/widgets/task_progress_widget.dart';
 import 'package:leyu_mobile/features/home/presentation/widgets/test_rejected_widget.dart';
 import 'package:leyu_mobile/features/home/presentation/widgets/text_to_speech_widget.dart';
+import 'package:leyu_mobile/features/home/presentation/widgets/image_to_text_widget.dart';
+import 'package:leyu_mobile/features/home/presentation/widgets/image_to_speech_widget.dart';
 import 'package:leyu_mobile/features/home/presentation/widgets/task_submission_onboarding.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -342,6 +344,20 @@ class _TaskSubmissionPageState extends State<TaskSubmissionPage> {
         return SpeechToTextWidget(
           audioPlayerKey: _taskKey1,
           textInputKey: _taskKey2,
+          submitButtonKey: _taskKey3,
+          navigationKey: _navigationKey,
+        );
+      case TaskType.Image_to_Text:
+        return ImageToTextWidget(
+          imageViewKey: _taskKey1,
+          textInputKey: _taskKey2,
+          submitButtonKey: _taskKey3,
+          navigationKey: _navigationKey,
+        );
+      case TaskType.Image_to_Speech:
+        return ImageToSpeechWidget(
+          imageViewKey: _taskKey1,
+          micButtonKey: _taskKey2,
           submitButtonKey: _taskKey3,
           navigationKey: _navigationKey,
         );

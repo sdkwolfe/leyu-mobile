@@ -27,7 +27,7 @@ class BaseDataRemoteDataSource {
   }
 
   Future<List<Dialect>> getDialects(String languageId) async {
-    final response = await _apiClient.get('/setting/dialect/all?language_id=$languageId');
+    final response = await _apiClient.get('/setting/dialect/language/$languageId');
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data["data"];
       return data.map((lang) => Dialect.fromJson(lang)).toList();

@@ -12,6 +12,10 @@ import 'package:leyu_mobile/features/profile/presentation/pages/edit_profile_pag
 import 'package:leyu_mobile/features/profile/presentation/pages/change_password_page.dart';
 import 'package:leyu_mobile/features/notification/presentation/bindings/notification_binding.dart';
 import 'package:leyu_mobile/features/notification/presentation/pages/notification_page.dart';
+import 'package:leyu_mobile/features/chatbot/presentation/bindings/chatbot_binding.dart';
+import 'package:leyu_mobile/features/chatbot/presentation/pages/chatbot_page.dart';
+import 'package:leyu_mobile/features/withdraw/presentation/bindings/withdraw_binding.dart';
+import 'package:leyu_mobile/features/withdraw/presentation/pages/select_bank_page.dart';
 import 'package:leyu_mobile/routes/app_routes.dart';
 import '../features/auth/presentation/bindings/auth_binding.dart';
 import '../features/auth/presentation/pages/forgot_password_page.dart';
@@ -99,6 +103,16 @@ class AppPages {
       name: AppRoutes.notification,
       page: () => NotificationPage(),
       binding: NotificationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.chatbot,
+      page: () => const ChatbotPage(),
+      binding: ChatbotBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.selectBank,
+      page: () => const SelectBankPage(),
+      binding: WithdrawBinding(),
     ),
   ];
 }

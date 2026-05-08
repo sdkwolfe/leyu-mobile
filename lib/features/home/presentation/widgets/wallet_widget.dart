@@ -2,10 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:leyu_mobile/core/widgets/button.dart';
 import 'package:leyu_mobile/core/widgets/image.dart';
 import 'package:leyu_mobile/core/widgets/loading.dart';
+import 'package:leyu_mobile/core/utils/message.dart';
 import 'package:leyu_mobile/features/home/presentation/controllers/home_controller.dart';
+import 'package:leyu_mobile/routes/app_routes.dart';
 
 class WalletWidget extends StatelessWidget {
   WalletWidget({super.key});
@@ -64,21 +65,28 @@ class WalletWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 5),
-          Obx(()=>
-             _homeController.isBalanceLoading.value?
-                  Container(
+          Obx(
+            () => _homeController.isBalanceLoading.value
+                ? Container(
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.only(left: 20),
-                    child: LoadingWidget(isTransparent: true, size: 25,height: 30,width: 30,color: Colors.white,),
-                  ):
-              Text(
-            _formatBalance(_homeController.userBalance.value),
-            style: const TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),),
+                    child: LoadingWidget(
+                      isTransparent: true,
+                      size: 25,
+                      height: 30,
+                      width: 30,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    _formatBalance(_homeController.userBalance.value),
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+          ),
           const SizedBox(height: 15),
           // add broken line
           BrokenLineWidget(),
@@ -88,22 +96,33 @@ class WalletWidget extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  print('Withdrawing:');
+                  if (_homeController.userBalance.value < 1) {
+                    showErrorMessage('withdraw.insufficient_balance'.tr);
+                    return;
+                  }
+                  Get.toNamed(
+                    AppRoutes.selectBank,
+                    arguments: _homeController.userBalance.value,
+                  );
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), // blur strength
+                    filter:
+                        ImageFilter.blur(sigmaX: 8, sigmaY: 8), // blur strength
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.15), // translucent
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                        border: Border.all(
+                            color: Colors.white.withOpacity(0.3), width: 1),
                       ),
                       child: Row(
                         children: [
-                          assetSvgImageWidget("withdraw.svg", width: 16, height: 16),
+                          assetSvgImageWidget("withdraw.svg",
+                              width: 16, height: 16),
                           const SizedBox(width: 5),
                           Text(
                             'home.wallet.withdraw'.tr,
@@ -128,15 +147,18 @@ class WalletWidget extends StatelessWidget {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                        border: Border.all(
+                            color: Colors.white.withOpacity(0.3), width: 1),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.history, color: Colors.white, size: 17),
+                          const Icon(Icons.history,
+                              color: Colors.white, size: 17),
                           const SizedBox(width: 5),
                           Text(
                             'home.wallet.history'.tr,

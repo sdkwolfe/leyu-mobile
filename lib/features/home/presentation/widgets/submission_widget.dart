@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:leyu_mobile/core/theme/app_colors.dart';
 import 'package:leyu_mobile/features/home/domain/entities/micro_task_entity.dart';
 import 'package:leyu_mobile/features/home/domain/entities/micro_task_status_enum.dart';
@@ -26,33 +25,7 @@ class SubmissionWidget extends StatelessWidget {
           const SizedBox(height: 20),
           AudioPlayerWidget(audioUrl: microTask.submissionAudioUrl!),
           if (microTask.acceptanceStatus == MicroTaskStatus.REJECTED)
-            Container(
-              margin: const EdgeInsets.only(top: 12.0),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.red.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.red.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.cancel, size: 14, color: AppColors.red),
-                  SizedBox(width: 4),
-                  Text(
-                    'Rejected',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.red,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            )
+            _buildRejectedRow(microTask),
         ]);
       }
       if (microTask.submissionText != null &&
@@ -75,34 +48,7 @@ class SubmissionWidget extends StatelessWidget {
               ),
             ),
             if (microTask.acceptanceStatus == MicroTaskStatus.REJECTED)
-              Container(
-                margin: const EdgeInsets.only(top: 12.0),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppColors.red.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.cancel, size: 14, color: AppColors.red),
-                    SizedBox(width: 4),
-                    Text(
-                      'Rejected',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.red,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildRejectedRow(microTask),
           ],
         );
       }
@@ -120,5 +66,76 @@ class SubmissionWidget extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _buildRejectedRow(MicroTaskEntity microTask) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Row(
+        children: [
+          // Rejected chip
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.red.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.red.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.cancel_rounded, size: 14, color: AppColors.red),
+                SizedBox(width: 4),
+                Text(
+                  'Rejected',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          // View history button
+          InkWell(
+            onTap: () =>
+                _homeController.showSubmissionHistoryBottomSheet(microTask.id),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.history_rounded,
+                      size: 14, color: AppColors.primary),
+                  const SizedBox(width: 4),
+                  Text(
+                    'home.wallet.history'.tr,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
