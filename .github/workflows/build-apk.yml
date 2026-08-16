@@ -1,31 +1,51 @@
 name: Build Android APK
+
 on:
   workflow_dispatch:
   push:
     branches: [ main, master ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.x'
           channel: 'stable'
+
       - name: Create .env
         run: |
           echo "API_BASE_URL=https://api.ydleyucomp.online" > .env
           echo "ONESIGNAL_APP_ID=dummy_onesignal_id" >> .env
+
+      - name: Generate Android Keystore and key.properties
+        run: |
+          keytool -genkey -v -keystore android/app/release.keystore -alias leyu_key -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=Leyu, OU=App, O=Leyu, L=AddisAbaba, S=Addis, C=ET"
+          cat << 'EOF' > android/key.properties
+          storePassword=123456
+          keyPassword=123456
+          keyAlias=leyu_key
+          storeFile=release.keystore
+          EOF
+          cp android/key.properties android/app/key.properties
+          cp android/app/release.keystore android/release.keystore
+
       - name: Install dependencies
         run: flutter pub get
-      - name: Build APK
+
+      - name: Build Release APK
         run: flutter build apk --release
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
