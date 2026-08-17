@@ -17,10 +17,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Flutter (3.22.x)
+      - name: Set up Flutter (3.24.x)
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.x'
+          flutter-version: '3.24.x'
           channel: 'stable'
 
       - name: Create .env
@@ -42,6 +42,12 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Patch legacy plugins for Gradle compatibility
+        run: |
+          find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.compileSdkVersion/34/g' {} +
+          find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.minSdkVersion/21/g' {} +
+          find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.targetSdkVersion/34/g' {} +
 
       - name: Build Release APK
         run: flutter build apk --release
