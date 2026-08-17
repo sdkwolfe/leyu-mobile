@@ -39,6 +39,10 @@ jobs:
           find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.compileSdkVersion/34/g' {} +
           find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.minSdkVersion/21/g' {} +
           find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.targetSdkVersion/34/g' {} +
+      - name: Update Gradle Wrapper
+        run: |
+          sed -i 's/gradle-[0-9.]*-\(all\|bin\)\.zip/gradle-8.14-all.zip/' android/gradle/wrapper/gradle-wrapper.properties
+          cat android/gradle/wrapper/gradle-wrapper.properties
       - name: Build Release APK
         run: flutter build apk --release
       - name: Upload APK
