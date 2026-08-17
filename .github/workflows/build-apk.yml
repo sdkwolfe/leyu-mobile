@@ -46,29 +46,29 @@ jobs:
           find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.minSdkVersion/21/g' {} +
           find /home/runner/.pub-cache -name "build.gradle" -exec sed -i 's/flutter.targetSdkVersion/34/g' {} +
           
-      - name: Update Gradle Wrapper
+      - name: Update Gradle, AGP, and Kotlin versions
         run: |
-          # AGP 8.11.1 requires Gradle 8.13+. 
-          # We use 8.14 to satisfy this requirement. Ignore the "will soon be dropped" warning.
+          # 1. Update Gradle Wrapper (AGP 8.11 requires Gradle 8.13+)
           sed -i -E 's/gradle-[0-9.]+-(all|bin)\.zip/gradle-8.14-all.zip/' android/gradle/wrapper/gradle-wrapper.properties
-          cat android/gradle/wrapper/gradle-wrapper.properties
           
-      - name: Update Android Gradle Plugin (AGP) version
-        run: |
-          # 1. Handle new template (settings.gradle or settings.gradle.kts)
+          # 2. Update AGP (to 8.11.1) and Kotlin (to 2.2.20) in new template
           find android -maxdepth 1 -name "settings.gradle*" -exec sed -i -E 's/(com\.android\.application[^0-9]*)[0-9]+\.[0-9]+\.[0-9]+/\18.11.1/g' {} +
+          find android -maxdepth 1 -name "settings.gradle*" -exec sed -i -E 's/(org\.jetbrains\.kotlin\.android[^0-9]*)[0-9]+\.[0-9]+\.[0-9]+/\12.2.20/g' {} +
           
-          # 2. Handle old template (android/build.gradle)
+          # 3. Update AGP and Kotlin in old template (android/build.gradle)
           if [ -f android/build.gradle ]; then
             sed -i -E 's/(com\.android\.tools\.build:gradle:)[0-9]+\.[0-9]+\.[0-9]+/\18.11.1/g' android/build.gradle
+            sed -i -E "s/(ext\.kotlin_version\s*=\s*['\"])[0-9]+\.[0-9]+\.[0-9]+(['\"])/\12.2.20\2/g" android/build.gradle
           fi
           
-          echo "--- Verifying AGP versions ---"
-          grep -n "com.android.application" android/settings.gradle* 2>/dev/null || true
-          grep -n "com.android.tools.build:gradle" android/build.gradle 2>/dev/null || true
+          echo "--- Verification ---"
+          cat android/gradle/wrapper/gradle-wrapper.properties
+          grep -nE "com.android.application|org.jetbrains.kotlin.android" android/settings.gradle* 2>/dev/null || true
+          grep -nE "com.android.tools.build:gradle|ext.kotlin_version" android/build.gradle 2>/dev/null || true
           
       - name: Build Release APK
-        run: flutter build apk --release
+        # Added the bypass flag to suppress the "will soon be dropped" warnings for Gradle/AGP
+        run: flutter build apk --release --android-skip-build-dependency-validation
         
       - name: Upload APK
         uses: actions/upload-artifact@v4
