@@ -22,7 +22,7 @@ jobs:
           
       - name: Create .env
         run: |
-          echo "API_BASE_URL=https://api.ydleyucomp.online" > .env
+          echo "API_BASE_URL=https://api.ydleyucomp.online/api" > .env
           echo "ONESIGNAL_APP_ID=dummy_onesignal_id" >> .env
           
       - name: Generate Android Keystore and key.properties
