@@ -72,7 +72,7 @@ class AuthRemoteDataSource {
 
   Future<LoginResponse> login(String phone, String password) async {
     try {
-      final response = await _apiClient.post('/iam/auth/mobile_login', data: {
+      final response = await _apiClient.post('/iam/auth/login', data: {
         'username': phone,
         'password': password,
         "device_token": "string",
