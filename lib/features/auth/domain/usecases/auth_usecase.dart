@@ -75,8 +75,8 @@ class AuthUseCase {
     );
   }
 
-  Future<void> login(String phone, String password) async {
-    final result = await _authRepository.login('+251$phone', password);
+  Future<void> login(String email, String password) async {
+    final result = await _authRepository.login(email, password);
     result.fold(
       (failure) => {showErrorMessage("Login failed: ${failure.message}")},
       (authResponse) async {
