@@ -1,15 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:leyu_mobile/features/auth/data/models/new_user.dart';
-
 import '../../../../../core/api/api_client.dart';
 import '../models/login_response.dart';
 import '../models/verification_response.dart';
-
 class AuthRemoteDataSource {
   final ApiClient _apiClient;
-
   AuthRemoteDataSource(this._apiClient);
-
   Future<String> register(String phone) async {
     try {
       final response = await _apiClient.post('/iam/users/sign-up', data: {
@@ -20,7 +16,6 @@ class AuthRemoteDataSource {
       rethrow;
     }
   }
-
   Future<VerificationResponse> activateAccount(
       String verificationId, String phoneNumber, String otp) async {
     try {
@@ -34,7 +29,6 @@ class AuthRemoteDataSource {
       rethrow;
     }
   }
-
   Future<void> registerProfile(NewUser newUser) async {
     try {
       // Create FormData for multipart upload
@@ -49,12 +43,10 @@ class AuthRemoteDataSource {
         'dialect_id': newUser.dialectId,
         'language_id': newUser.languageId,
       });
-
       // Add referral code if provided
       if (newUser.referralCode != null && newUser.referralCode!.isNotEmpty) {
         formData.fields.add(MapEntry('referral_code', newUser.referralCode!));
       }
-
       // Add national ID file if provided
       if (newUser.nationalIdPath != null &&
           newUser.nationalIdPath!.isNotEmpty) {
@@ -63,17 +55,15 @@ class AuthRemoteDataSource {
           await MultipartFile.fromFile(newUser.nationalIdPath!),
         ));
       }
-
       await _apiClient.patch('/iam/users', data: formData);
     } catch (e) {
       rethrow;
     }
   }
-
-  Future<LoginResponse> login(String phone, String password) async {
+  Future<LoginResponse> login(String email, String password) async {
     try {
-      final response = await _apiClient.post('/iam/auth/login', data: {
-        'username': phone,
+      final response = await _apiClient.post('/iam/auth/mobile_login', data: {
+        'username': email,
         'password': password,
         "device_token": "string",
         "device_type": "android",
@@ -83,7 +73,6 @@ class AuthRemoteDataSource {
       rethrow;
     }
   }
-
   Future<Map<String, dynamic>> refreshToken(String refreshToken) async {
     try {
       final response = await _apiClient.post('/iam/auth/refresh-token',
@@ -96,7 +85,6 @@ class AuthRemoteDataSource {
       rethrow;
     }
   }
-
   Future<void> requestOtp(String phoneNumber) async {
     try {
       final response =
@@ -107,7 +95,6 @@ class AuthRemoteDataSource {
       rethrow;
     }
   }
-
   Future<void> verifyOtp(String phoneNumber, String otp) async {
     try {
       final response = await _apiClient.post('/iam/auth/verify-otp', data: {
@@ -118,7 +105,6 @@ class AuthRemoteDataSource {
       rethrow;
     }
   }
-
   Future<void> resetPassword(
       String phone, String otp, String newPassword) async {
     try {
