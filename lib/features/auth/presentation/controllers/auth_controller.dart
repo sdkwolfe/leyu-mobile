@@ -124,10 +124,10 @@ class AuthController extends GetxController {
     isRegisteringProfile.value = false;
   }
 
-  Future<void> login(String phone, String password) async {
+  Future<void> login(String email, String password) async {
     isLoggingIn.value = true;
     loginLoadingReason.value = "Logging in";
-    await _authUseCase.login(phone, password);
+    await _authUseCase.login(email, password);
     isLoggingIn.value = false;
   }
 
