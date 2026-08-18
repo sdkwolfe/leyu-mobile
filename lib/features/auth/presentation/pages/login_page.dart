@@ -15,10 +15,10 @@ class LoginPage extends StatelessWidget {
   final AuthController _authController = Get.find();
 
   final formKey = GlobalKey<FormState>();
-  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final FocusNode _phoneNumberFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
   LoginPage({super.key});
@@ -67,11 +67,13 @@ class LoginPage extends StatelessWidget {
                           key: formKey,
                           child: Column(
                             children: [
-                              PhoneInputBoxWidget(
-                                controller: _phoneNumberController,
-                                focus: _phoneNumberFocusNode,
+                              InputBoxWidget(
+                                inputType: InputType.text,
+                                label: "Email".tr,
+                                placeHolder: "Enter your email".tr,
+                                controller: _emailController,
+                                focus: _emailFocusNode,
                                 focusNext: _passwordFocusNode,
-                                placeHolder: "auth.login.phone_placeholder".tr,
                                 showLabel: true,
                               ),
                               SizedBox(height: 8),
@@ -127,7 +129,7 @@ class LoginPage extends StatelessWidget {
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
                               _authController.login(
-                                  _phoneNumberController.text.trim(),
+                                  _emailController.text.trim(),
                                   _passwordController.text.trim()
                               );
                             }
