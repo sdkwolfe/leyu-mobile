@@ -88,7 +88,6 @@ class HomeController extends GetxController {
         await _localStorage.saveUser(user);
       }
     } catch (e) {
-      // Silently fail - don't show error to user
       print('Failed to refresh user profile: $e');
     }
   }
@@ -163,7 +162,6 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchTaskDetail(String taskId) async {
-    // Cancel previous loading if a new task is requested
     if (_currentLoadingTaskId != null && _currentLoadingTaskId != taskId) {
       print('Cancelling previous task load: $_currentLoadingTaskId');
     }
@@ -173,14 +171,12 @@ class HomeController extends GetxController {
     selectedTaskDetail.value = null;
     selectedMicroTaskIndex.value = null;
 
-    // CRITICAL: Clear maps BEFORE fetching new task detail
     recordedAudioFiles.clear();
     savedTextOutputs.clear();
 
     try {
       final taskDetail = await _taskUseCase.getTaskDetail(taskId);
 
-      // Check if this task is still the one we want (not cancelled)
       if (_currentLoadingTaskId != taskId) {
         print('Task load cancelled, ignoring result for: $taskId');
         return;
@@ -190,14 +186,10 @@ class HomeController extends GetxController {
       selectedMicroTaskIndex.value = 0;
       hasStartedTest.value = false;
 
-      // Check if instructions have been shown for this specific task
       hasReadInstructions.value = await _hasShownInstructionsForTask(taskId);
 
-      // Load any previously saved submissions from local storage
-      // This will validate batch and only load matching data
       await _loadTaskSubmissions(taskId);
 
-      // Log what was loaded for debugging
       print('Loaded task $taskId with batch ${taskDetail?.batch}');
       print('Audio files loaded: ${recordedAudioFiles.length}');
       print('Text outputs loaded: ${savedTextOutputs.length}');
@@ -292,7 +284,9 @@ class HomeController extends GetxController {
     if (isSuccess) {
       await _handleSuccessfulSubmission(taskId);
     } else {
+      // FIX 1: Show error message to user on failure
       StorageLogger.logApiSubmissionFailed(taskId);
+      showErrorMessage("Failed to submit audio. Please check your connection and try again.");
     }
 
     isSubmittingTask.value = false;
@@ -376,7 +370,9 @@ class HomeController extends GetxController {
     if (isSuccess) {
       await _handleSuccessfulSubmission(taskId);
     } else {
+      // FIX 1: Show error message to user on failure
       StorageLogger.logApiSubmissionFailed(taskId);
+      showErrorMessage("Failed to submit text. Please check your connection and try again.");
     }
 
     isSubmittingTask.value = false;
@@ -425,19 +421,16 @@ class HomeController extends GetxController {
   }
 
   Future<void> _handleSuccessfulSubmission(String taskId) async {
-    // Clean up storage FIRST (before clearing in-memory)
     await _cleanupTaskStorage(taskId);
 
-    // Clear in-memory cache after storage cleanup
     recordedAudioFiles.clear();
     savedTextOutputs.clear();
 
-    // Clear selected task detail to prevent reloading old data
     selectedTaskDetail.value = null;
     selectedMicroTaskIndex.value = null;
 
-    // Refresh and navigate
-    fetchTasks();
+    // FIX 2: Await fetchTasks before navigating back to prevent UI flicker
+    await fetchTasks();
     Get.back();
     showSuccessMessage("Task submitted successfully!");
   }
@@ -450,8 +443,6 @@ class HomeController extends GetxController {
     return recordedAudioFiles[microTaskId]?.path;
   }
 
-  /// Get the proper file path for recording
-  /// Returns the path where the recording should be saved
   Future<String?> getRecordingFilePath() async {
     try {
       if (selectedTaskDetail.value == null ||
@@ -464,7 +455,6 @@ class HomeController extends GetxController {
       final microTaskId = selectedTaskDetail
           .value!.microTasks[selectedMicroTaskIndex.value!].id;
 
-      // Get task directory
       final taskDir = await _fileStorageService.getTaskDirectory(taskId);
       final filePath = '${taskDir.path}/$microTaskId.aac';
 
@@ -484,10 +474,8 @@ class HomeController extends GetxController {
     final taskId = selectedTaskDetail.value!.task.id;
     final audioFile = recordedAudioFiles[microTaskId];
 
-    // Remove from in-memory map
     recordedAudioFiles.remove(microTaskId);
 
-    // Delete from storage
     try {
       if (audioFile != null) {
         await _fileStorageService.deleteAudioFile(audioFile.path);
@@ -498,21 +486,16 @@ class HomeController extends GetxController {
     }
   }
 
-  /// Initialize storage services
-  /// Falls back to in-memory storage if initialization fails
   Future<void> _initializeStorage() async {
     try {
       StorageLogger.logStorageInitStarted();
       await _taskStorageService.init();
       StorageLogger.logStorageInitSuccess();
     } catch (e) {
-      // Error handler already called in TaskStorageService.init()
-      // Continue with in-memory storage - no need to rethrow
+      // Continue with in-memory storage
     }
   }
 
-  /// Load task submissions from local storage
-  /// Validates audio file paths and populates in-memory maps
   Future<void> _loadTaskSubmissions(String taskId) async {
     try {
       StorageLogger.logTaskSubmissionsLoadStarted(taskId);
@@ -522,7 +505,6 @@ class HomeController extends GetxController {
         return;
       }
 
-      // CRITICAL: Validate batch number matches current batch
       final currentBatch = selectedTaskDetail.value?.batch;
       if (currentBatch == null) {
         print('Warning: Current batch is null, skipping submission load');
@@ -535,17 +517,13 @@ class HomeController extends GetxController {
         print(
             'Warning: Stored batch (${submission.batch}) does not match current batch ($currentBatch)');
         print('Deleting stale data from previous batch...');
-        // Delete stale data from previous batch
         await _cleanupTaskStorage(taskId);
-        // Ensure maps stay cleared after cleanup
         recordedAudioFiles.clear();
         savedTextOutputs.clear();
         print('Stale data cleaned up successfully');
         return;
       }
 
-      // CRITICAL: Only load data for ELIGIBLE micro tasks
-      // Eligible = NOT_STARTED or (REJECTED with canRetry = true)
       final eligibleMicroTaskIds = selectedTaskDetail.value!.microTasks
           .where((mt) =>
               mt.acceptanceStatus == MicroTaskStatus.NOT_STARTED ||
@@ -556,22 +534,18 @@ class HomeController extends GetxController {
 
       print('Eligible micro task IDs: $eligibleMicroTaskIds');
 
-      // Load and validate audio file paths (only for eligible micro tasks)
       int skippedAudioCount = 0;
       for (final entry in submission.audioFilePaths.entries) {
         final microTaskId = entry.key;
         final filePath = entry.value;
 
-        // Check if micro task is eligible
         if (!eligibleMicroTaskIds.contains(microTaskId)) {
           print('Skipping audio for non-eligible micro task: $microTaskId');
           skippedAudioCount++;
-          // Delete from storage since it's no longer needed
           await _taskStorageService.deleteAudioRecording(taskId, microTaskId);
           continue;
         }
 
-        // Validate file existence
         final exists = await _fileStorageService.fileExists(filePath);
         if (exists) {
           recordedAudioFiles[microTaskId] = File(filePath);
@@ -579,23 +553,18 @@ class HomeController extends GetxController {
         } else {
           StorageLogger.logInvalidFilePathRemoved(
               taskId, microTaskId, filePath);
-          // Remove invalid entry from storage
           await _taskStorageService.deleteAudioRecording(taskId, microTaskId);
         }
       }
 
-      // Load text outputs with validation (only for eligible micro tasks)
       int skippedTextCount = 0;
       for (final entry in submission.textOutputs.entries) {
         final microTaskId = entry.key;
 
-        // Check if micro task is eligible
         if (!eligibleMicroTaskIds.contains(microTaskId)) {
           print(
               'Skipping text output for non-eligible micro task: $microTaskId');
           skippedTextCount++;
-          // Note: Text outputs are stored in the same submission object,
-          // they'll be cleaned up when the whole submission is deleted
           continue;
         }
 
@@ -612,20 +581,16 @@ class HomeController extends GetxController {
       final textCount = savedTextOutputs.length;
       StorageLogger.logTaskSubmissionsLoaded(taskId, audioCount, textCount);
 
-      // Show recovery message to user if data was recovered
       if (audioCount > 0 || textCount > 0) {
         StorageErrorHandler.handleDataRecovery(audioCount, textCount);
       }
     } catch (e) {
       StorageLogger.logTaskSubmissionsLoadError(taskId, e);
-      // Clear maps on error to prevent loading corrupted data
       recordedAudioFiles.clear();
       savedTextOutputs.clear();
     }
   }
 
-  /// Persist audio recording to storage
-  /// Saves file to proper location and stores metadata in Hive
   Future<void> _persistAudioRecording(
       String microTaskId, File audioFile) async {
     try {
@@ -639,14 +604,12 @@ class HomeController extends GetxController {
       final batch = selectedTaskDetail.value!.batch;
       final isTest = selectedTaskDetail.value!.isTest;
 
-      // Save file to proper location
       final savedFilePath = await _fileStorageService.saveAudioFile(
         taskId,
         microTaskId,
         audioFile,
       );
 
-      // Save metadata to Hive
       await _taskStorageService.saveAudioRecording(
         taskId,
         microTaskId,
@@ -655,20 +618,15 @@ class HomeController extends GetxController {
         isTest,
       );
 
-      // Update in-memory map with the new file path
       recordedAudioFiles[microTaskId] = File(savedFilePath);
 
       StorageLogger.logAudioPersistSuccess(microTaskId);
     } catch (e) {
       StorageLogger.logAudioPersistError(microTaskId, e);
       StorageErrorHandler.handleAudioSaveError(e, showToUser: true);
-      // Continue with in-memory storage only
     }
   }
 
-  /// Persist text output to storage
-  /// Saves text to Hive database
-  /// Public method for widgets to call directly
   Future<void> persistTextOutput(String microTaskId, String text) async {
     try {
       if (selectedTaskDetail.value == null) {
@@ -681,7 +639,6 @@ class HomeController extends GetxController {
       final batch = selectedTaskDetail.value!.batch;
       final isTest = selectedTaskDetail.value!.isTest;
 
-      // Save text to Hive
       await _taskStorageService.saveTextOutput(
         taskId,
         microTaskId,
@@ -694,31 +651,24 @@ class HomeController extends GetxController {
     } catch (e) {
       StorageLogger.logTextPersistError(microTaskId, e);
       StorageErrorHandler.handleTextSaveError(e, showToUser: true);
-      // Continue with in-memory storage only
     }
   }
 
-  /// Clean up task storage after successful submission
-  /// Deletes files and database entries
   Future<void> _cleanupTaskStorage(String taskId) async {
     try {
       StorageLogger.logStorageCleanupStarted(taskId);
 
-      // Delete all files for the task
       await _fileStorageService.deleteTaskFiles(taskId);
 
-      // Delete submission from Hive
       await _taskStorageService.deleteTaskSubmission(taskId);
 
       StorageLogger.logStorageCleanupSuccess(taskId);
     } catch (e) {
       StorageLogger.logStorageCleanupError(taskId, e);
       StorageErrorHandler.handleSubmissionCleanupError(e);
-      // Don't rethrow - cleanup failure shouldn't block the user
     }
   }
 
-  // Submission History
   RxBool isLoadingSubmissionHistory = false.obs;
   RxList<dynamic> submissionHistory = <dynamic>[].obs;
 
