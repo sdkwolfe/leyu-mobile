@@ -8,13 +8,12 @@ import 'package:leyu_mobile/features/home/data/models/task_detail.dart';
 
 import '../../../../core/api/api_client.dart';
 
-class TaskRemoteDataSource{
-
+class TaskRemoteDataSource {
   final ApiClient _apiClient;
 
   TaskRemoteDataSource(this._apiClient);
 
-  Future<List<Task>> getMyTasks({int page = 1 , int pageSize = 10, String? filter}) async {
+  Future<List<Task>> getMyTasks({int page = 1, int pageSize = 10, String? filter}) async {
     Map<String, dynamic> params = {
       'page': page,
       'limit': pageSize,
@@ -24,15 +23,14 @@ class TaskRemoteDataSource{
       params['status'] = filter.toUpperCase();
     }
 
-    final response = await _apiClient.get('/task-distribution/my-tasks',
-        params: params);
+    final response = await _apiClient.get('/task-distribution/my-tasks', params: params);
     print('Response from getMyTasks: ${response.data}');
-      List<dynamic>? tasksData = response.data['data']['result'];
-      if (tasksData == null) {
-        showErrorMessage("Couldn't fetch tasks. Please try again later.");
-        return [];
-      }
-      return tasksData.map((task) => Task.fromJson(task)).toList();
+    List<dynamic>? tasksData = response.data['data']['result'];
+    if (tasksData == null) {
+      showErrorMessage("Couldn't fetch tasks. Please try again later.");
+      return [];
+    }
+    return tasksData.map((task) => Task.fromJson(task)).toList();
   }
 
   Future<TaskDetail> getTaskDetail(String taskId) async {
@@ -42,31 +40,38 @@ class TaskRemoteDataSource{
   }
 
   Future<void> submitAudioTask(String taskId, int batch, bool isTest, Map<String, File> recordings) async {
-      Map<String , MultipartFile> rec = recordings.map((key, value) => MapEntry(key, MultipartFile.fromFileSync(value.path)));
-      FormData data = FormData.fromMap(rec);
-      data.fields.add(MapEntry('batch', batch.toString()));
-      data.fields.add(MapEntry('is_test', isTest.toString()));
-      await _apiClient.post('/task-distribution/$taskId/contribute_audio',
-          data: data,
-          options: Options(headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          ));
+    Map<String, MultipartFile> rec = recordings.map(
+      (key, value) => MapEntry(key, MultipartFile.fromFileSync(value.path)),
+    );
+    
+    FormData data = FormData.fromMap({
+      ...rec,
+      'batch': batch.toString(),
+      'is_test': isTest, // FIXED: Send as native boolean, not string
+    });
+
+    // FIXED: Removed manual 'Content-Type' header. 
+    // Dio automatically adds the correct multipart/form-data boundary.
+    // Manually setting it strips the boundary and breaks the upload.
+    await _apiClient.post(
+      '/task-distribution/$taskId/contribute_audio',
+      data: data,
+    );
   }
 
   Future<void> submitTextTask(String taskId, int batch, bool isTest, Map<String, String> textOutputs) async {
-      await _apiClient.post('/task-distribution/$taskId/contribute',
-          data: {
-            'batch': batch,
-            'is_test': isTest,
-            'attempts': [
-              for (var entry in textOutputs.entries)
-                {
-                  'micro_task_id': entry.key,
-                  'text_data_set': entry.value,
-                }
-            ]
-          },);
+    await _apiClient.post('/task-distribution/$taskId/contribute',
+        data: {
+          'batch': batch,
+          'is_test': isTest,
+          'attempts': [
+            for (var entry in textOutputs.entries)
+              {
+                'micro_task_id': entry.key,
+                'text_data_set': entry.value,
+              }
+          ]
+        });
   }
 
   Future<double> getBalance() async {
@@ -80,5 +85,4 @@ class TaskRemoteDataSource{
     print('Response from getSubmissionHistory: ${response.data}');
     return response.data['data'] as List<dynamic>;
   }
-
 }
