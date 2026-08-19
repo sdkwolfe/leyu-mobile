@@ -5,7 +5,7 @@ import 'package:leyu_mobile/core/widgets/language_changer.dart';
 
 import '../../../../core/utils/screen_size.dart';
 import '../../../../core/widgets/button.dart';
-import '../../../../core/widgets/date_picker.dart';
+// Removed: import '../../../../core/widgets/date_picker.dart';
 import '../../../../core/widgets/dropdown.dart';
 import '../../../../core/widgets/input_box.dart';
 import '../../../../core/widgets/image_picker_widget.dart';
@@ -28,14 +28,15 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _middleNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _birthDateController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  
   RxnString selectedGender = RxnString(null);
   Rxn<File> selectedNationalId = Rxn<File>(null);
 
   final FocusNode _firstNameFocusNode = FocusNode();
   final FocusNode _middleNameFocusNode = FocusNode();
   final FocusNode _lastNameFocusNode = FocusNode();
-  final FocusNode _birthDateFocusNode = FocusNode();
+  final FocusNode _ageFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -46,8 +47,11 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
         TextEditingValue(text: _authController.middleName.value);
     _lastNameController.value =
         TextEditingValue(text: _authController.lastName.value);
-    _birthDateController.value =
-        TextEditingValue(text: _authController.birthDate.value);
+        
+    // Safely handle age whether it's stored as String or Int in the controller
+    _ageController.value =
+        TextEditingValue(text: _authController.age.value.toString());
+        
     selectedGender.value = _authController.gender.value;
     selectedNationalId.value = _authController.nationalIdFile.value;
   }
@@ -119,20 +123,22 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
                         placeHolder: "auth.profile.last_name_placeholder".tr,
                         controller: _lastNameController,
                         focus: _lastNameFocusNode,
-                        focusNext: _birthDateFocusNode,
+                        focusNext: _ageFocusNode,
                         showLabel: true,
                       ),
                       SizedBox(height: getScreenHeight(context) * 0.01),
-                      DatePickerWidget(
-                        label: "auth.profile.birth_date".tr,
-                        placeHolder: "auth.profile.birth_date_placeholder".tr,
-                        controller: _birthDateController,
-                        focus: _birthDateFocusNode,
+                      
+                      // AGE INPUT (Replaces DatePicker)
+                      InputBoxWidget(
+                        inputType: InputType.number, // Fallback to InputType.text if .number doesn't exist in your enum
+                        label: "Age", 
+                        placeHolder: "12 - 120",
+                        controller: _ageController,
+                        focus: _ageFocusNode,
                         focusNext: null,
                         showLabel: true,
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
                       ),
+                      
                       SizedBox(height: getScreenHeight(context) * 0.01),
                       DropdownBoxWidget<String>(
                         label: "auth.profile.gender".tr,
@@ -180,11 +186,26 @@ class _RegisterUserInfoWidgetState extends State<RegisterUserInfoWidget> {
           fontSize: 16,
           onPressed: () {
             if (formKey.currentState!.validate()) {
+              final ageStr = _ageController.value.text.trim();
+              final age = int.tryParse(ageStr);
+              
+              // Strict Validation: Integer only, no decimals, no negatives, 12 <= age <= 120
+              if (age == null || age < 12 || age > 120) {
+                Get.snackbar(
+                  "Invalid Age", 
+                  "Age must be a whole number between 12 and 120.",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                );
+                return;
+              }
+              
               _authController.saveFirstStage(
                 _firstNameController.value.text.trim(),
                 _middleNameController.value.text.trim(),
                 _lastNameController.value.text.trim(),
-                _birthDateController.value.text.trim(),
+                ageStr, // Pass age string instead of birth_date
                 selectedGender.value!,
                 selectedNationalId.value,
               );
