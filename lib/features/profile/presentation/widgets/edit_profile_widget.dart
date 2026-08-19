@@ -4,7 +4,7 @@ import 'package:leyu_mobile/core/theme/app_colors.dart';
 import 'package:leyu_mobile/core/widgets/button.dart';
 import 'package:leyu_mobile/core/widgets/dropdown.dart';
 import 'package:leyu_mobile/core/widgets/input_box.dart';
-import 'package:leyu_mobile/core/widgets/date_picker.dart';
+// Removed: import 'package:leyu_mobile/core/widgets/date_picker.dart';
 import 'package:leyu_mobile/features/auth/domain/entities/dialect_entity.dart';
 import 'package:leyu_mobile/features/auth/domain/entities/language_entity.dart';
 import '../controllers/profile_controller.dart';
@@ -178,12 +178,12 @@ class EditProfileWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Birth Date Field (Disabled)
+            // Age Field (Disabled - Replaces Birth Date)
             InputBoxWidget(
-              inputType: InputType.text,
-              label: 'auth.profile.birth_date'.tr,
-              placeHolder: 'auth.profile.birth_date_placeholder'.tr,
-              controller: controller.birthDateController,
+              inputType: InputType.number,
+              label: 'Age',
+              placeHolder: '12 - 120',
+              controller: controller.ageController,
               showLabel: true,
               isOptional: false,
               enabled: false,
