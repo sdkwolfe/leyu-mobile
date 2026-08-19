@@ -10,7 +10,7 @@ class User {
   final String? phoneNumber;
   final String? profilePicture;
   final String? gender;
-  final String? birthDate;
+  final int? age;
   final bool? isActive;
   final String? roleId;
   final Role? role;
@@ -31,7 +31,7 @@ class User {
     this.phoneNumber,
     this.profilePicture,
     this.gender,
-    this.birthDate,
+    this.age,
     this.isActive,
     this.roleId,
     this.role,
@@ -54,9 +54,7 @@ class User {
       phoneNumber: json['phone_number'],
       profilePicture: json['profile_picture'],
       gender: json['gender'],
-      birthDate: json['birth_date'] != null
-          ? json['birth_date'].toString().split("T")[0]
-          : null,
+      age: json['age'] != null ? int.tryParse(json['age'].toString()) : null,
       isActive: json['is_active'],
       roleId: json['role_id'],
       role: json['role'] != null ? Role.fromJson(json['role']) : null,
