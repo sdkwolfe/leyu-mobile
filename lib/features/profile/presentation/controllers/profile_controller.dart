@@ -28,7 +28,7 @@ class ProfileController extends GetxController {
 
   // Additional Profile Data (Read-only)
   RxString profileGender = ''.obs;
-  RxString profileBirthDate = ''.obs;
+  RxString profileAge = ''.obs;
   RxString profileLanguage = ''.obs;
   RxString profileDialect = ''.obs;
 
@@ -55,7 +55,7 @@ class ProfileController extends GetxController {
   // Read-only Form Controllers
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
-  final TextEditingController birthDateController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
   final TextEditingController languageController = TextEditingController();
   final TextEditingController dialectController = TextEditingController();
 
@@ -89,7 +89,7 @@ class ProfileController extends GetxController {
 
         // Load additional read-only fields
         profileGender.value = user.gender ?? '';
-        profileBirthDate.value = user.birthDate ?? '';
+        profileAge.value = user.age?.toString() ?? '';
         profileLanguage.value = user.language?.name ?? '';
         profileDialect.value = user.dialect?.name ?? '';
 
@@ -126,13 +126,13 @@ class ProfileController extends GetxController {
     emailController.text = profileEmail.value;
 
     // Initialize read-only controllers
-    phoneNumberController.text = profilePhone.value.substring(4);
+    phoneNumberController.text = profilePhone.value.length > 4 ? profilePhone.value.substring(4) : profilePhone.value;
     genderController.text = profileGender.value == 'Male'
         ? 'auth.profile.gender_male'.tr
         : profileGender.value == 'Female'
             ? 'auth.profile.gender_female'.tr
             : profileGender.value;
-    birthDateController.text = profileBirthDate.value;
+    ageController.text = profileAge.value;
     languageController.text = profileLanguage.value;
     dialectController.text = profileDialect.value;
   }
@@ -593,7 +593,7 @@ class ProfileController extends GetxController {
     emailController.dispose();
     phoneNumberController.dispose();
     genderController.dispose();
-    birthDateController.dispose();
+    ageController.dispose();
     languageController.dispose();
     dialectController.dispose();
     referralController.dispose();
