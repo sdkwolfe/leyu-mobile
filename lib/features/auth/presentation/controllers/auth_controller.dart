@@ -15,31 +15,23 @@ class AuthController extends GetxController {
 
   AuthController(this._authUseCase, this._baseDataUseCase);
 
-  /// Email Registration State
+  /// Email Registration State (NEW)
   RxBool isEmailRegistering = false.obs;
   RxString emailRegisterLoadingReason = "".obs;
-  
-  // Page 0: Credentials
   RxString email = ''.obs;
   RxString password = ''.obs;
-
-  // Page 1: Profile Info
   RxString firstName = ''.obs;
   RxString middleName = ''.obs;
   RxString lastName = ''.obs;
-  RxString age = ''.obs; // Replaced birthDate with age
+  RxString age = ''.obs; 
   RxnString gender = RxnString(null);
   Rxn<File> nationalIdFile = Rxn<File>(null);
-
-  // Page 2: Language & Dialect
   RxnString selectedLanguageId = RxnString(null);
   RxSet<LanguageEntity> languages = <LanguageEntity>{}.obs;
   RxBool isLoadingLanguages = false.obs;
   RxnString selectedDialectId = RxnString(null);
   RxSet<DialectEntity> dialects = <DialectEntity>{}.obs;
   RxBool isLoadingDialects = false.obs;
-
-  // Navigation
   RxInt currentPage = 0.obs;
 
   ///Login
@@ -47,6 +39,36 @@ class AuthController extends GetxController {
   RxString loginLoadingReason = "".obs;
   RxString errorMessage = ''.obs;
 
+  /// OLD STATE (Kept as stubs to prevent compilation errors in unused pages)
+  RxBool isRegistering = false.obs;
+  RxBool isTermsAccepted = false.obs;
+  RxString registeredPhone = "".obs;
+  RxString registeredPassword = "".obs;
+  RxBool isActivatingAccount = false.obs;
+  RxString registerLoadingReason = "".obs;
+  RxnString verificationId = RxnString(null);
+  RxString birthDate = ''.obs;
+  RxString referralCode = ''.obs;
+  RxBool isRegisteringProfile = false.obs;
+  RxString registerProfileLoadingReason = "".obs;
+  RxInt forgotPasswordPage = 0.obs;
+  RxBool isRequestingOtp = false.obs;
+  Rx<String> forgotPhoneNumber = "".obs;
+  RxBool isVerifyingOtp = false.obs;
+  Rx<String> otp = "".obs;
+  RxBool isResettingPassword = false.obs;
+  RxString forgotLoadingReason = ''.obs;
+  RxBool canResend = true.obs;
+  RxInt countdown = 0.obs;
+  Timer? _resendTimer;
+
+  @override
+  void onClose() {
+    _resendTimer?.cancel();
+    super.onClose();
+  }
+
+  // --- NEW EMAIL REGISTRATION METHODS ---
   Future<void> saveCredentialsAndNext(String emailVal, String passwordVal) async {
     email.value = emailVal;
     password.value = passwordVal;
@@ -110,5 +132,31 @@ class AuthController extends GetxController {
     final result = await _baseDataUseCase.getDialects(languageId);
     dialects.value = Set.from(result);
     isLoadingDialects.value = false;
+  }
+
+  // --- OLD METHODS (Stubs to fix compilation errors in unused pages) ---
+  Future<void> register(String phone, {isActivating = false}) async {}
+  Future<void> activateAccount(String otp) async {}
+  Future<void> registerProfile() async {}
+  Future<void> requestOtp(String phone, {isActivatingAccount = false}) async {}
+  Future<void> verifyOtp(String code) async {}
+  Future<void> resetPassword(String newPassword) async {}
+  
+  void saveFirstStage(String fName, String mName, String lName, String bDate, String genderValue, File? nationalId) {
+    firstName.value = fName;
+    middleName.value = mName;
+    lastName.value = lName;
+    birthDate.value = bDate;
+    gender.value = genderValue;
+    nationalIdFile.value = nationalId;
+    currentPage.value = 1; 
+  }
+
+  void saveThirdStage(String languageId, String dialectId, String emailVal, String referralCodeVal) {
+    selectedLanguageId.value = languageId;
+    selectedDialectId.value = dialectId;
+    email.value = emailVal;
+    referralCode.value = referralCodeVal;
+    currentPage.value = 3;
   }
 }
