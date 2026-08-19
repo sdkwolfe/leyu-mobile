@@ -15,11 +15,9 @@ import '../controllers/auth_controller.dart';
 class RegisterPage extends StatelessWidget {
   final AuthController _authController = Get.find();
 
-  // Controllers for Step 0 (Credentials)
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Controllers for Step 1 (Profile)
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _middleNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -27,7 +25,6 @@ class RegisterPage extends StatelessWidget {
   RxnString selectedGender = RxnString(null);
   final List<String> genderOptions = ['Male', 'Female'];
 
-  // Controllers for Step 2 (Language)
   RxnString selectedLanguageId = RxnString(null);
   RxnString selectedDialectId = RxnString(null);
 
@@ -36,7 +33,6 @@ class RegisterPage extends StatelessWidget {
   final formKey2 = GlobalKey<FormState>();
 
   RegisterPage({super.key}) {
-    // Reset state when page opens
     _authController.currentPage.value = 0;
     _authController.languages.clear();
     _authController.dialects.clear();
@@ -93,20 +89,14 @@ class RegisterPage extends StatelessWidget {
                           ),
                           SizedBox(height: getScreenHeight(context) * 0.02),
                           
-                          // STEP 0: Credentials
                           if (_authController.currentPage.value == 0) _buildStep0(context),
-                          
-                          // STEP 1: Profile Info
                           if (_authController.currentPage.value == 1) _buildStep1(context),
-                          
-                          // STEP 2: Language & Dialect
                           if (_authController.currentPage.value == 2) _buildStep2(context),
                         ],
                       ),
                     ),
                   ),
                   
-                  // Navigation Buttons
                   _buildBottomButton(context),
                   
                   SizedBox(height: getScreenHeight(context)*0.025),
@@ -203,6 +193,7 @@ class RegisterPage extends StatelessWidget {
             showLabel: true,
             isOptional: false,
             placeHolder: "Select Gender".tr,
+            displayText: (text) => text,
             onChanged: (value) => selectedGender.value = value,
           )),
         ],
@@ -219,10 +210,19 @@ class RegisterPage extends StatelessWidget {
             if (_authController.isLoadingLanguages.value) {
               return const Center(child: CircularProgressIndicator());
             }
+            LanguageEntity? selectedLang;
+            if (selectedLanguageId.value != null) {
+              for (var l in _authController.languages) {
+                if (l.id == selectedLanguageId.value) {
+                  selectedLang = l;
+                  break;
+                }
+              }
+            }
             return DropdownBoxWidget<LanguageEntity>(
               label: "Language".tr,
               items: _authController.languages.toList(),
-              selectedItem: _authController.languages.firstWhereOrNull((l) => l.id == selectedLanguageId.value),
+              selectedItem: selectedLang,
               showLabel: true,
               isOptional: false,
               placeHolder: "Select Language".tr,
@@ -244,10 +244,19 @@ class RegisterPage extends StatelessWidget {
             if (_authController.isLoadingDialects.value) {
               return const Center(child: CircularProgressIndicator());
             }
+            DialectEntity? selectedDial;
+            if (selectedDialectId.value != null) {
+              for (var d in _authController.dialects) {
+                if (d.id == selectedDialectId.value) {
+                  selectedDial = d;
+                  break;
+                }
+              }
+            }
             return DropdownBoxWidget<DialectEntity>(
               label: "Dialect".tr,
               items: _authController.dialects.toList(),
-              selectedItem: _authController.dialects.firstWhereOrNull((d) => d.id == selectedDialectId.value),
+              selectedItem: selectedDial,
               showLabel: true,
               isOptional: false,
               placeHolder: "Select Dialect".tr,
@@ -289,8 +298,8 @@ class RegisterPage extends StatelessWidget {
           fontSize: 16,
           onPressed: () {
             if (formKey1.currentState!.validate()) {
-              final age = int.tryParse(_ageController.text.trim());
-              if (age == null || age < 12 || age > 120) {
+              final ageVal = int.tryParse(_ageController.text.trim());
+              if (ageVal == null || ageVal < 12 || ageVal > 120) {
                 Get.snackbar("Error", "Age must be between 12 and 120");
                 return;
               }
@@ -304,7 +313,7 @@ class RegisterPage extends StatelessWidget {
                 _lastNameController.text.trim(),
                 _ageController.text.trim(),
                 selectedGender.value!,
-                null, // nationalId
+                null,
               );
             }
           },
